@@ -221,14 +221,50 @@ def run_all_four_visualizations():
             ax.plot(tx, tz, color='white', alpha=0.5, linewidth=1.0, zorder=2)
             ax.plot(tx, tz, color=c_dark, alpha=0.8, linewidth=0.7, zorder=3)
             
-        ax.axhspan(0, 60, color='yellow', alpha=0.18, label='HSQ Resist (60 nm)', zorder=5)
-        ax.axhline(60, color='#ff9800', linestyle='--', linewidth=1.2, zorder=5)
+        # Draw incident beam cone pointing down to (0, 0)
+        z_top = -ylim * 0.14
+        cone_half_w = xlim * 0.08
+        cone_x = [-cone_half_w, cone_half_w, 0]
+        cone_z = [z_top, z_top, 0]
+        ax.fill(cone_x, cone_z, color=c_dark, alpha=0.9, zorder=8)
         
-        ax.set_title(f"{name}", fontweight='bold', pad=10)
+        # Incident beam label (matching paper's He+ / e- style)
+        beam_sym = r"$\mathbf{e^-}$" if ptype == 'electron' else r"$\mathbf{He^+}$"
+        ax.text(cone_half_w * 1.5, z_top * 0.5, f"{beam_sym}\n({energy:.0f} keV)", 
+                fontsize=11, fontweight='bold', color=c_dark, va='center', ha='left', zorder=9)
+            
+        # Material layer bands & text annotations
+        ax.axhspan(0, 60, color='yellow', alpha=0.18, zorder=5)
+        ax.axhline(0, color='black', linestyle='-', linewidth=1.2, zorder=6)
+        ax.axhline(60, color='#ff9800', linestyle='--', linewidth=1.4, zorder=6)
+        
+        # Layer labels directly inside the plot
+        ax.text(-xlim * 0.92, 30, "HSQ Resist", fontsize=10.5, fontweight='bold', 
+                color='#e65100', va='center', zorder=7)
+        ax.text(-xlim * 0.92, 100 if ylim > 300 else 80, "Substrate", fontsize=10.5, fontweight='bold', 
+                color='#37474f', va='center', zorder=7)
+        
+        # Double-ended lateral spread arrow (matching paper's Figure 2b)
+        if ptype == 'electron':
+            spread_w = xlim * 0.45
+            ax.annotate('', xy=(-spread_w, 60), xytext=(spread_w, 60),
+                        arrowprops=dict(arrowstyle='<->', color='black', lw=2.2), zorder=8)
+            ax.text(0, 85 if ylim > 400 else 75, r"Broad Spread $\Delta X$", 
+                    fontsize=9, fontweight='bold', color='#08519c' if energy==30 else '#54278f', 
+                    ha='center', va='top', bbox=dict(boxstyle="round,pad=0.2", fc="white", ec="gray", alpha=0.9), zorder=9)
+        else:
+            spread_w = xlim * 0.08
+            ax.annotate('', xy=(-spread_w, 60), xytext=(spread_w, 60),
+                        arrowprops=dict(arrowstyle='<->', color='black', lw=2.2), zorder=8)
+            ax.text(0, 75 if ylim > 400 else 72, r"Collimated $\Delta X < 1$ nm", 
+                    fontsize=9, fontweight='bold', color='#a63603' if energy==30 else '#99000d', 
+                    ha='center', va='top', bbox=dict(boxstyle="round,pad=0.2", fc="white", ec="gray", alpha=0.9), zorder=9)
+        
+        ax.set_title(f"{name}", fontweight='bold', pad=12)
         ax.set_xlabel("Lateral Scatter X (nm)")
         ax.set_ylabel("Depth Z (nm)")
         ax.set_xlim(-xlim, xlim)
-        ax.set_ylim(ylim, -20) # Invert depth
+        ax.set_ylim(ylim, z_top * 1.35) # Invert depth and leave room for incident cone
         
         legend_elements = [
             mlines.Line2D([], [], color='#ffeb3b', linestyle='-', linewidth=2.2, label='50% Energy Core'),
@@ -240,7 +276,7 @@ def run_all_four_visualizations():
         ax.grid(True, linestyle=':', alpha=0.4)
         
     plt.tight_layout()
-    plt.subplots_adjust(top=0.93)
+    plt.subplots_adjust(top=0.92)
     plt.savefig('master_fig1_interaction_volume.png')
     print("Saved master_fig1_interaction_volume.png")
 
