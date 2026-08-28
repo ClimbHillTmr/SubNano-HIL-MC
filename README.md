@@ -4,8 +4,9 @@
 [![Python Version](https://img.shields.io/badge/Python-3.9%2B-blue.svg)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![DOI](https://img.shields.io/badge/Reference-Nanotechnology%2035%20(2024)%20495301-success.svg)](https://doi.org/10.1088/1361-6528/ad6e88)
+[![Guide](https://img.shields.io/badge/科普指南-零基础小白秒懂版-orange.svg)](KINDERGARTEN_GUIDE_ZH.md)
 
-[**English Documentation**](#-english-documentation) | [**中文文档**](#-中文文档)
+[**English Documentation**](#-english-documentation) | [**中文文档**](#-中文文档) | [**🎈 零基础小白科普 (通俗导读)**](KINDERGARTEN_GUIDE_ZH.md)
 
 ---
 
