@@ -13,3 +13,13 @@ ENV/
 # OS specific
 .DS_Store
 Thumbs.db
+
+# Agent / tool private state (never commit)
+.workbuddy/
+
+# Scratch / temporary files
+tmp_*.py
+run_case_legacy.py
+
+# Regenerable binary caches (rebuild via scripts/nature_visualization.py)
+*.pkl

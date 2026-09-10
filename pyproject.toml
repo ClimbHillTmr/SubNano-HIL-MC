@@ -1,0 +1,29 @@
+[tool.ruff]
+# The codebase is written at ~100 columns; keep ruff consistent with that.
+line-length = 100
+target-version = "py39"
+extend-exclude = [".venv", "analysis", "docs/legacy"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W"]
+ignore = [
+    "E741",  # existing short loop variables are being cleaned up incrementally
+]
+
+[tool.ruff.lint.per-file-ignores]
+# run_case.py embeds long HTML/report strings; wrapping them hurts readability.
+"run_case.py" = ["E501"]
+# Archived one-off analysis / plotting scripts: style-only rules relaxed
+# (long matplotlib label strings, semicolon/colon statement style, import
+# ordering).  F-codes and the remaining E-codes stay enforced so genuine
+# errors (undefined names, unused imports, real bugs) are still caught.
+"scripts/generate_4_master_figures.py" = ["E501", "E702", "E701", "E402"]
+"scripts/generate_figures_v2.py" = ["E501", "E702", "E701", "E402"]
+"scripts/export_master_report_pdf.py" = ["E501", "E702", "E701", "E402"]
+"scripts/analyze_xrr_sample4.py" = ["E501", "E702", "E701", "E402"]
+"scripts/generate_final_experiment_suite.py" = ["E501", "E702", "E701", "E402"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+pythonpath = ["src", "."]

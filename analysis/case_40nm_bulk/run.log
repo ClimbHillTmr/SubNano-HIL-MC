@@ -1,0 +1,34 @@
+[17:15:18] parsing data/4.cif ...
+[17:15:19]    C120 H152 O28 Ti6  P -1  Z=1  rho_xtal=1.354 g/cm3  R1=0.0448
+[17:15:19] material check:
+[17:15:19]    Material            : Ti6-oxo cluster resist (film)  rho=0.771  theta_c=0.1308 deg
+[17:15:19]    Material            : Ti6-oxo cluster (crystal)  rho=1.354  theta_c=0.1733 deg
+[17:15:19]    Material            : Si(001) substrate  rho=2.329  theta_c=0.2211 deg
+[17:15:19] MC: 40 nm resist on 670 um Si ...
+[17:15:31] MC: 40 nm resist on 20 nm SiNx membrane (reference) ...
+[17:15:46] MC: XRR-measured 23.7 nm on bulk Si ...
+[17:15:54] MC: 40 nm at crystal density (1.354) ...
+[17:16:33] calibrated stochastic averaging area a_eff = 9.33 nm^2 (-> membrane LER3sigma_min = 0.21 nm)
+D:\GitHub\SubNano-HIL-MC\run_case.py:221: UserWarning: This figure includes Axes that are not compatible with tight_layout, so results might be incorrect.
+  fig.tight_layout(rect=[0, 0, 1, 0.94])
+[17:16:34]    saved fig1_structure.png
+D:\GitHub\SubNano-HIL-MC\run_case.py:293: UserWarning: This figure includes Axes that are not compatible with tight_layout, so results might be incorrect.
+  fig.tight_layout(rect=[0, 0, 1, 0.93])
+[17:16:35]    saved fig2_stack_energy.png
+D:\GitHub\SubNano-HIL-MC\run_case.py:345: UserWarning: This figure includes Axes that are not compatible with tight_layout, so results might be incorrect.
+  fig.tight_layout(rect=[0, 0, 1, 0.93])
+[17:16:37]    saved fig3_psf_nils.png
+[17:16:37] MC: thickness scan ...
+[17:16:42]    t= 15.0 nm -> min LER3σ = 0.211 nm
+[17:16:47]    t= 20.0 nm -> min LER3σ = 0.189 nm
+[17:16:51]    t= 25.0 nm -> min LER3σ = 0.190 nm
+[17:16:55]    t= 30.0 nm -> min LER3σ = 0.202 nm
+[17:17:00]    t= 40.0 nm -> min LER3σ = 0.193 nm
+[17:17:04]    t= 50.0 nm -> min LER3σ = 0.189 nm
+[17:17:09]    t= 60.0 nm -> min LER3σ = 0.184 nm
+[17:17:15]    t= 80.0 nm -> min LER3σ = 0.266 nm
+D:\GitHub\SubNano-HIL-MC\run_case.py:413: UserWarning: This figure includes Axes that are not compatible with tight_layout, so results might be incorrect.
+  fig.tight_layout(rect=[0, 0, 1, 0.93])
+[17:17:16]    saved fig4_ler_window.png
+[17:17:16]    saved results.json  (118s total)
+[17:17:16]    saved D:\GitHub\SubNano-HIL-MC\analysis\case_40nm_bulk\report.html

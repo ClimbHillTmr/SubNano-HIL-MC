@@ -1,11 +1,14 @@
 import os
-import numpy as np
 from reportlab.lib.pagesizes import A4
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+LEGACY_DIR = os.path.join(ROOT, "docs", "legacy")
+os.makedirs(LEGACY_DIR, exist_ok=True)
 from reportlab.lib import colors
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.lib.units import cm, mm, inch
+from reportlab.lib.styles import ParagraphStyle
+from reportlab.lib.units import mm
 from reportlab.platypus import (
-    SimpleDocTemplate, Paragraph, Spacer, Image, Table, TableStyle, PageBreak, KeepTogether, HRFlowable
+    SimpleDocTemplate, Paragraph, Spacer, Image, Table, TableStyle, PageBreak, HRFlowable
 )
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
@@ -44,25 +47,27 @@ class NumberedCanvas(canvas.Canvas):
         self.saveState()
         self.setFont(CHINESE_FONT_LIGHT, 8.5)
         self.setFillColor(colors.HexColor('#757575'))
-        
+
         # Header (pages > 1)
         if self._pageNumber > 1:
             self.drawString(20*mm, 285*mm, "SubNano-HIL-MC: 氦离子光刻 (HIL) 蒙特卡洛模拟全景可视化科学报告")
             self.setStrokeColor(colors.HexColor('#e0e0e0'))
             self.setLineWidth(0.5)
             self.line(20*mm, 282*mm, 190*mm, 282*mm)
-            
+
         # Footer
         self.setStrokeColor(colors.HexColor('#e0e0e0'))
         self.setLineWidth(0.5)
         self.line(20*mm, 15*mm, 190*mm, 15*mm)
-        
+
         self.drawString(20*mm, 10*mm, "Confidential & Proprietary | Reference: Nanotechnology 35 (2024) 495301")
         page_str = f"Page {self._pageNumber} of {page_count}"
         self.drawRightString(190*mm, 10*mm, page_str)
         self.restoreState()
 
-def build_pdf(filename="Master_Visualization_Report.pdf"):
+def build_pdf(filename=None):
+    if filename is None:
+        filename = os.path.join(LEGACY_DIR, "Master_Visualization_Report.pdf")
     doc = SimpleDocTemplate(
         filename,
         pagesize=A4,
@@ -72,14 +77,12 @@ def build_pdf(filename="Master_Visualization_Report.pdf"):
         bottomMargin=20*mm
     )
 
-    styles = getSampleStyleSheet()
-    
     # Custom Palette
     c_primary = colors.HexColor('#1a237e')     # Deep Navy
     c_secondary = colors.HexColor('#b71c1c')   # Crimson Red
     c_dark = colors.HexColor('#212121')        # Dark Grey
     c_bg_box = colors.HexColor('#f5f7fa')      # Soft Slate Blue
-    
+
     # Custom Paragraph Styles
     style_title = ParagraphStyle(
         'DocTitle',
@@ -90,7 +93,7 @@ def build_pdf(filename="Master_Visualization_Report.pdf"):
         alignment=0,
         spaceAfter=6
     )
-    
+
     style_subtitle = ParagraphStyle(
         'DocSubtitle',
         fontName=CHINESE_FONT_LIGHT,
@@ -100,7 +103,7 @@ def build_pdf(filename="Master_Visualization_Report.pdf"):
         alignment=0,
         spaceAfter=15
     )
-    
+
     style_h1 = ParagraphStyle(
         'Heading1_Custom',
         fontName=CHINESE_FONT,
@@ -111,7 +114,7 @@ def build_pdf(filename="Master_Visualization_Report.pdf"):
         spaceAfter=8,
         keepWithNext=True
     )
-    
+
     style_h2 = ParagraphStyle(
         'Heading2_Custom',
         fontName=CHINESE_FONT,
@@ -140,7 +143,7 @@ def build_pdf(filename="Master_Visualization_Report.pdf"):
     story.append(Paragraph("SubNano-HIL-MC 科学仿真报告", ParagraphStyle('TopTag', fontName=CHINESE_FONT, fontSize=9, textColor=c_secondary, leading=11, spaceAfter=4)))
     story.append(Paragraph("氦离子光刻 (HIL) 蒙特卡洛模拟全景可视化分析报告", style_title))
     story.append(Paragraph("<b>Master Scientific Visualization Report: Multi-Physics Monte Carlo Simulation on Sub-Nanometer LER</b>", style_subtitle))
-    
+
     story.append(HRFlowable(width="100%", thickness=1.5, color=c_primary, spaceBefore=0, spaceAfter=12))
 
     # Meta box table
@@ -181,13 +184,17 @@ def build_pdf(filename="Master_Visualization_Report.pdf"):
     # 2. 四大科学可视化图表
     # ==========================================
     story.append(Paragraph("二、 四大科学可视化全景图 (The 4 Master Visualizations)", style_h1))
-    
+
     # --- Figure 1 ---
     story.append(Paragraph("图 1：微观相互作用体积与红蓝分色轨迹分离图 (Interaction Volume & Red/Blue Trajectories)", style_h2))
-    img1_path = "master_fig1_interaction_volume.png"
-    if os.path.exists(img1_path):
-        story.append(Image(img1_path, width=170*mm, height=142*mm))
-    
+    img1_path = os.path.join(LEGACY_DIR, "master_fig1_interaction_volume.png")
+    if not os.path.exists(img1_path):
+        raise FileNotFoundError(
+            f"Required figure not found: {img1_path}\n"
+            "Run generate_4_master_figures.py or generate_figures_v2.py first to produce the master figures."
+        )
+    story.append(Image(img1_path, width=170*mm, height=142*mm))
+
     desc_fig1 = (
         "<b>图 1 核心解析（红蓝分色轨迹与限制电子扩散）：</b><br/>"
         "借鉴经典光刻仿真规范，采用 2×2 布局对 <b>正向入射粒子（蓝色/橙色轨迹）</b> 与 <b>反弹背散射粒子（红色轨迹）</b> 进行了显式分色追踪，并叠加 50%、90%、99% 等能线与顶部落束入射锥体说明。<br/>"
@@ -200,10 +207,14 @@ def build_pdf(filename="Master_Visualization_Report.pdf"):
 
     # --- Figure 2 ---
     story.append(Paragraph("图 2：点扩散函数 (PSF)、表面出射径向邻近区分析 (Fig S15f) 与 NILS 梯度", style_h2))
-    img2_path = "master_fig2_psf_nils.png"
-    if os.path.exists(img2_path):
-        story.append(Image(img2_path, width=170*mm, height=55*mm))
-    
+    img2_path = os.path.join(LEGACY_DIR, "master_fig2_psf_nils.png")
+    if not os.path.exists(img2_path):
+        raise FileNotFoundError(
+            f"Required figure not found: {img2_path}\n"
+            "Run generate_4_master_figures.py or generate_figures_v2.py first to produce the master figures."
+        )
+    story.append(Image(img2_path, width=170*mm, height=55*mm))
+
     desc_fig2 = (
         "<b>图 2 核心解析（表面径向邻近破坏区与 NILS 梯度）：</b><br/>"
         "• <b>(a) PSF 点扩散函数（对数坐标，带 95% 置信区间）</b>：HIL 呈现尖锐的纳米核心，离轴 5 nm 处能量暴跌 4 个数量级。<br/>"
@@ -216,10 +227,14 @@ def build_pdf(filename="Master_Visualization_Report.pdf"):
 
     # --- Figure 3 ---
     story.append(Paragraph("图 3：线条物理边缘波形与 LER 统计概率分布图 (LER Statistics & Gaussian Fits)", style_h2))
-    img3_path = "master_fig3_ler_statistics.png"
-    if os.path.exists(img3_path):
-        story.append(Image(img3_path, width=170*mm, height=94*mm))
-    
+    img3_path = os.path.join(LEGACY_DIR, "master_fig3_ler_statistics.png")
+    if not os.path.exists(img3_path):
+        raise FileNotFoundError(
+            f"Required figure not found: {img3_path}\n"
+            "Run generate_4_master_figures.py or generate_figures_v2.py first to produce the master figures."
+        )
+    story.append(Image(img3_path, width=170*mm, height=94*mm))
+
     desc_fig3 = (
         "<b>图 3 核心解析（亚纳米 LER 的数理统计证明）：</b><br/>"
         "采用经典的双层图表设计：上层为显影后线条真实物理起伏与 ±3σ 置信带；下层为边缘偏差量的概率密度直方图与高斯正态拟合。<br/>"
@@ -232,10 +247,14 @@ def build_pdf(filename="Master_Visualization_Report.pdf"):
 
     # --- Figure 4 ---
     story.append(Paragraph("图 4：工艺窗口全景图与散粒噪声-PSF拖尾竞争相图 (Process Window Landscape)", style_h2))
-    img4_path = "master_fig4_process_window.png"
-    if os.path.exists(img4_path):
-        story.append(Image(img4_path, width=170*mm, height=69*mm))
-    
+    img4_path = os.path.join(LEGACY_DIR, "master_fig4_process_window.png")
+    if not os.path.exists(img4_path):
+        raise FileNotFoundError(
+            f"Required figure not found: {img4_path}\n"
+            "Run generate_4_master_figures.py or generate_figures_v2.py first to produce the master figures."
+        )
+    story.append(Image(img4_path, width=170*mm, height=69*mm))
+
     desc_fig4 = (
         "<b>图 4 核心解析（实验操作指南与相图）：</b><br/>"
         "• <b>(a) U 型 LER-剂量曲线</b>：精确划定了三大物理区间——<b>① 散粒噪声区 (&lt; 15 pC/cm)</b> 粒子离散漏光导致粗糙；<b>② 最佳抛光甜点区 (15–80 pC/cm)</b> 相邻束斑产生“线边抛光效应”，达成 <b>0.21 nm 极佳平滑度</b>；<b>③ PSF 拖尾区 (&gt; 80 pC/cm)</b> 过曝光导致边缘展宽粗糙。此外，膜厚越薄 (10 nm)，亚纳米 LER 的剂量窗口越宽。<br/>"
@@ -249,7 +268,7 @@ def build_pdf(filename="Master_Visualization_Report.pdf"):
     # 3. 终极参数对比与 XRR 意义
     # ==========================================
     story.append(Paragraph("三、 终极对比矩阵与 XRR 实测密度意义", style_h1))
-    
+
     table_data = [
         ["物理对比维度", "电子束光刻 (EBL)", "氦离子光刻 (HIL)", "物理本质与优势原因"],
         ["粒子质量", "1 m_e (轻质电子)", "≈ 7300 m_e (重质氦核)", "质量大 7300 倍，动量巨大，前向零偏转"],
@@ -259,7 +278,7 @@ def build_pdf(filename="Master_Visualization_Report.pdf"):
         ["图像对数斜率 NILS", "~ 1.8 (平缓模糊)", "~ 9.5 (极度陡峭)", "形成针尖状能量台阶，对散粒噪声强免疫"],
         ["线边缘粗糙度 LER", "2 ~ 15 nm (锯齿明显)", "0.2 nm (原子级平整)", "满足 IRDS 2037 顶级芯片制造极限标准"]
     ]
-    
+
     t_summary = Table(table_data, colWidths=[30*mm, 38*mm, 42*mm, 60*mm])
     t_summary.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), c_primary),
@@ -288,4 +307,4 @@ def build_pdf(filename="Master_Visualization_Report.pdf"):
     print(f"PDF Successfully generated: {filename}")
 
 if __name__ == "__main__":
-    build_pdf("Master_Visualization_Report.pdf")
+    build_pdf()

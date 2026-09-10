@@ -1,0 +1,8 @@
+# Runtime dependencies (pinned to the versions verified in this project)
+numpy==2.5.3
+scipy==1.18.1
+matplotlib==3.11.1
+pillow==12.3.0
+
+# scripts/export_master_report_pdf.py (archived) needs reportlab
+reportlab==5.0.1

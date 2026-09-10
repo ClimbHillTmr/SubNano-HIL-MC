@@ -1,0 +1,57 @@
+[
+  {
+    "key": "gemmi_small",
+    "url": "https://gemmi.readthedocs.io/en/latest/small.html",
+    "error": "HTTP Error 404: Not Found"
+  },
+  {
+    "key": "gemmi_cif",
+    "url": "https://gemmi.readthedocs.io/en/latest/cif.html",
+    "status": 200,
+    "local_path": "analysis\\references\\gemmi_cif.html",
+    "bytes": 311214,
+    "access_date": "2026-09-08"
+  },
+  {
+    "key": "cif_core",
+    "url": "https://raw.githubusercontent.com/COMCIFS/cif_core/master/cif_core.dic",
+    "status": 200,
+    "local_path": "analysis\\references\\cif_core.dic",
+    "bytes": 929409,
+    "access_date": "2026-09-08"
+  },
+  {
+    "key": "refl1d",
+    "url": "https://refl1d.readthedocs.io/en/latest/api/refl1d.sample.reflectivity.html",
+    "error": "HTTP Error 404: Not Found"
+  },
+  {
+    "key": "nist_astar",
+    "url": "https://physics.nist.gov/PhysRefData/Star/Text/ASTAR.html",
+    "status": 200,
+    "local_path": "analysis\\references\\nist_astar.html",
+    "bytes": 12307,
+    "access_date": "2026-09-08"
+  },
+  {
+    "key": "nist_star_methods",
+    "url": "https://physics.nist.gov/PhysRefData/Star/Text/programs.html",
+    "status": 200,
+    "local_path": "analysis\\references\\nist_star_methods.html",
+    "bytes": 15349,
+    "access_date": "2026-09-08"
+  },
+  {
+    "key": "zhuang_iop",
+    "url": "https://iopscience.iop.org/article/10.1088/1361-6528/ad6e88",
+    "error": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: self-signed certificate in certificate chain (_ssl.c:1082)>"
+  },
+  {
+    "key": "ler_reference",
+    "url": "https://api.crossref.org/works?query.title=Reducing%20roughness%20in%20extreme%20ultraviolet%20lithography&rows=2",
+    "status": 200,
+    "local_path": "analysis\\references\\ler_reference.json",
+    "bytes": 10325,
+    "access_date": "2026-09-08"
+  }
+]
