@@ -61,15 +61,19 @@
 
 | 指标 | 块体 Si（670 µm） | 悬空 SiNₓ（20 nm） |
 |---|---|---|
-| 胶内沉积能量 | ~3293 eV (~11.0%) | ~3290 eV |
-| 衬底 SE2 回注 | ~143 eV/离子 (~4.3%) | ~245 eV/离子 |
-| 背散射系数 η | ~0.18% | ~0.09% |
-| PSF 包络 r₉₀ | 1.62 nm | 1.62 nm |
-| LSF FWHM | ~2.00 nm | ~2.00 nm |
-| 最佳剂量 | ~245 pC/cm | ~175 pC/cm |
-| **最佳 CD** | **~15.2 nm** | ~15.1 nm |
-| **NILS** | **~12.6** | ~12.5 |
-| **LER 3σ（随机下限）** | **0.215 nm** | **0.210 nm** |
+| 胶内沉积能量 | 2403 eV (8.0%) | 2372 eV (7.9%) |
+| 衬底 SE2 回注 | 114 eV/离子 (3.8%) | 194 eV/离子 (6.5%) |
+| 背散射系数 η | 1.44% | 0.19% |
+| Bragg 峰位 | 163 nm | — |
+| PSF r₅₀ / r₉₀ / r₉₉ | 0.62 / 1.62 / 3.87 nm | — |
+| LSF FWHM | 2.25 nm | — |
+| 最佳剂量 | 379 pC/cm | 308 pC/cm |
+| **最佳 CD** | **15.74 nm** | 15.83 nm |
+| **NILS** | **25.66** | 24.88 |
+| **LER 3σ（随机下限）** | **0.202 nm** | **0.210 nm** |
+| CD=10 nm 剂量 / NILS / LER₃σ | 93 pC/cm / 6.85 / **0.487 nm** | — |
+| 曝光宽容度 (CD=10 nm ±10%) | 64 – 97 pC/cm | — |
+| 表面粗糙度 σ | 0.855 nm | — |
 
 > LER(3σ) 是 LER 随机下限；表面粗糙度耦合后的总 LER(3σ) ≈
 > `3·√((LER_stoch/3)² + σ_surface²)`，σ_surface ≈ 0.2 nm（XRR），详细见
@@ -277,8 +281,8 @@ print(f"range = {res.range_substrate:.1f} nm")    # → 281.8
 
 **关键标定**（`run_case.py` 顶部常量）：
 
-- `E_SCALE = 1.10` → 30 keV He⁺ 在 Si 中射程 282 nm（SRIM 282.2 nm，<1%）。
-- `a_eff ≈ 9.17 nm²`（反拟合）→ 使悬空膜基准最小 LER(3σ) = 0.21 nm（对齐
+- `E_SCALE = 1.10` → 30 keV He⁺ 在 Si 中射程 284.7 nm（SRIM 282.2 nm，+1%）。
+- `a_eff ≈ 2.75 nm²`（反拟合）→ 使悬空膜基准最小 LER(3σ) = 0.21 nm（对齐
   Zhuang 2024 实测）。
 - `W_SE = 20 eV`，`RHO_GEL = 15 eV/nm³`，`RESIST_THICKNESS_NM = 40`，
   `SUBSTRATE_THICKNESS_NM = 670e3`，`BEAM_ENERGY_KEV = 30`。
@@ -286,7 +290,8 @@ print(f"range = {res.range_substrate:.1f} nm")    # → 281.8
 **`metrics.converged_lsf` 对称化（2026-09 修复）**：原先 PSF Abel 变换后只
 返回半轴 [0, r_max]，使 `evaluate_line` 把 CD 算成半宽（≈7.5 nm）、NILS
 减半；LER 因依赖 NILS/CD 比值不变。修复后镜像到完整对称轴，物理 CD ≈
-15.2 nm，NILS ≈ 12.6。本仓库所有 CD / NILS 数值均为修复后口径。
+15.7 nm，NILS ≈ 25.7；`a_eff` 因此重新标定到 ≈ 2.75 nm² 以保持 LER₃σ
+≈ 0.21 nm 的锚定。本仓库所有 CD / NILS 数值均为修复后口径。
 
 ---
 

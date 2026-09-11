@@ -1037,7 +1037,7 @@ def write_report(results, analysis, xrr_fit, s_bulk, s_mem, s_thin, s_dense,
     html = f"""<!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8">
 <title>SubNano-HIL-MC · {esc(spec['beam'])} {spec['energy_keV']:.0f} keV on
-{esc(spec['resist_nm']):.0f} nm Ti-cluster / {spec['substrate_thickness_um']:.0f} µm Si</title>
+{spec['resist_nm']:.0f} nm Ti-cluster / {spec['substrate_thickness_um']:.0f} µm Si</title>
 <style>{css}</style></head><body>
 <h1>SubNano-HIL-MC report</h1>
 <p class="meta">Generated {esc(results['generated'])} · run_case.py ·
@@ -1046,9 +1046,9 @@ seed 2024–2027 + 311–313</p>
 <h2>1. Executive summary</h2>
 <table><tr><th>spec</th><td>
 {esc(spec['beam'])} {spec['energy_keV']:.0f} keV ·
-{esc(spec['resist_nm']):.0f} nm Ti-cluster resist ·
+{spec['resist_nm']:.0f} nm Ti-cluster resist ·
 {esc(spec['substrate'])} {spec['substrate_thickness_um']:.0f} µm ·
-CD target {esc(spec['cd_target_nm']):.0f} ± {esc(spec['cd_tolerance']):.2f} nm
+CD target {spec['cd_target_nm']:.0f} ± {spec['cd_tolerance']:.2f} nm
 </td></tr><tr><th>calibration</th><td>
 <span class="key">e_scale</span>={cal['e_scale']:.2f} →
 range<sub>Si</sub> = {cal['range_substrate_nm']:.1f} nm

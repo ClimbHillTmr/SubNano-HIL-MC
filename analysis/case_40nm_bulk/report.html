@@ -1,177 +1,90 @@
-<!DOCTYPE html><html lang="zh-CN" data-page-node-id="qqQvRXw02lejZWwkIYS6Ks"><head data-page-node-id="gl53KjysvAatBBWFUdfeBb"><meta charset="utf-8" data-page-node-id="FMsYttPpiVzWRriTyhxfaU">
-<title>SubNano-HIL-MC · 40 nm Ti-cluster resist on 670 µm Si</title>
-<style>
-body{font-family:-apple-system,"Segoe UI",Arial,"Microsoft YaHei",sans-serif;
-     max-width:1080px;margin:0 auto;padding:28px 22px 80px;color:#1a1a1a;
-     background:#fff;line-height:1.7}
-h1{font-size:26px;border-bottom:3px solid #1565c0;padding-bottom:10px}
-h2{font-size:20px;margin-top:38px;border-left:5px solid #1565c0;padding-left:10px}
-h3{font-size:16px;margin-top:24px;color:#0d47a1}
-table{border-collapse:collapse;width:100%;margin:14px 0;font-size:13.5px}
-th,td{border:1px solid #d0d7de;padding:7px 10px;text-align:left}
-th{background:#eef3fa;font-weight:600}
-code{background:#f2f4f7;padding:2px 5px;border-radius:4px;font-size:13px}
-.figure{margin:18px 0;text-align:center}
-.figure img{max-width:100%;border:1px solid #e1e4e8;border-radius:6px}
-.cap{font-size:12.5px;color:#57606a;margin-top:6px}
-.note{background:#fff8e1;border-left:4px solid #f9a825;padding:10px 14px;margin:14px 0}
-.key{background:#e8f5e9;border-left:4px solid #2e7d32;padding:10px 14px;margin:14px 0}
-.warn{background:#fdecea;border-left:4px solid #c62828;padding:10px 14px;margin:14px 0}
-ul{margin:8px 0 8px 4px}
-</style></head><body data-page-node-id="tS5gAKF5wABNAalrr3O5ez">
-<h1 data-page-node-id="0QtDHQDnZfDQ7bDFdl4UqF">氦离子光刻（HIL）多物理场蒙特卡洛分析报告</h1>
-<p data-page-node-id="DwDWDhGGu8ND6OgUE8k9PO"><b data-page-node-id="5BpIK2ycLt7mU6p4NsPdeK">工况</b>：光刻胶 40 nm（Ti₆-氧簇光刻胶，组成取自 <code data-page-node-id="UZSiA16BCew8vKBCDHgYjT">data/4.cif</code>，密度取自 XRR 实测）
-/ 衬底 Si(001) 670 µm / 入射 He⁺ 30 keV &nbsp;|&nbsp
-生成时间 2026-09-09 22:43:20</p>
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<title>SubNano-HIL-MC · He+ 30 keV on
+40 nm Ti-cluster / 670 µm Si</title>
+<style>body{font-family:-apple-system,Segoe UI,Arial,'Microsoft YaHei',sans-serif;max-width:1080px;margin:0 auto;padding:28px 22px 80px;color:#1a1a1a;line-height:1.55}h1{margin:0 0 6px}h2{margin-top:34px;border-bottom:1px solid #ddd;padding-bottom:4px}h3{margin-top:22px}table{border-collapse:collapse;margin:10px 0;font-size:0.95em}th,td{border:1px solid #d0d0d0;padding:5px 9px;text-align:left}th{background:#f4f4f4}.num{font-variant-numeric:tabular-nums}.key{color:#0a4;font-weight:600}img{max-width:100%;border:1px solid #e0e0e0;margin:8px 0}.open{background:#fff7e6;border-left:4px solid #e8a400;padding:8px 14px;margin:6px 0}.meta{color:#666;font-size:0.9em}</style></head><body>
+<h1>SubNano-HIL-MC report</h1>
+<p class="meta">Generated 2026-09-11 14:23:01 · run_case.py ·
+seed 2024–2027 + 311–313</p>
 
-<h2 data-page-node-id="dNiuz4Ay8dv1gV58hm2HRH">1. 单晶文件 4.cif 解读</h2>
-<p data-page-node-id="5jSghey0s7cVbVTZgiig4c">文件 <code data-page-node-id="hv8qQ33TbfeoVFCFVUQZmZ">data/4.cif</code> 是 Olex2 1.3 + SHELXL-2018/3 精修输出的单晶 CIF（<code data-page-node-id="JNa0krI5Rh68xS2iSa113s">data_
-zzh-hpf-js_auto</code>），Rigaku Synergy Custom（HyPix 探测器）在 <b data-page-node-id="51nnWu29A3WA6JsJ8meJmj">100 K</b>
-用 <b data-page-node-id="zodLLhuAHoFuP2d7kxKZ1o">Cu Kα</b> 收集到 θ<sub data-page-node-id="RvBDAN8f0ZxATrZWauN1xq">max</sub> = 82.1°（分辨率 0.79 Å），
-完整度 0.999，<b data-page-node-id="tzHoMGoDRD6kXlaAGxdBGS">R1 = 0.0448</b>，数据质量很好，结构可信。</p>
+<h2>1. Executive summary</h2>
+<table><tr><th>spec</th><td>
+He+ 30 keV ·
+40 nm Ti-cluster resist ·
+Si(001) 670 µm ·
+CD target 10 ± 0.10 nm
+</td></tr><tr><th>calibration</th><td>
+<span class="key">e_scale</span>=1.10 →
+range<sub>Si</sub> = 284.7 nm
+(SRIM 282.2, +0.90%);
+<span class="key">a_eff</span> = 2.75 nm²
+(back-fitted to 0.21 nm);
+<span class="key">w_SE</span> = 20 eV;
+<span class="key">ρ_gel</span> = 15 eV/nm³;
+dose axis <b>not calibrated</b>
+</td></tr><tr><th>PSF / LSF</th><td>
+r<sub>90</sub> = 1.62 nm;
+LSF FWHM = 2.25 nm
+</td></tr><tr><th>design floor</th><td>
+CD<sub>floor</sub> = 2.24 nm
+(1 x molecular diameter from data/4.cif)
+</td></tr></table>
 
-<h3 data-page-node-id="isoQ7agI049l7jNgqVpBCd">1.1 晶体学与分子式</h3>
-<table data-page-node-id="Bq3u0CGwD73J9EK3YkQNCO">
-<tr data-page-node-id="1Dv7EgkQIDSevF0cHNSK3Y"><th data-page-node-id="pxRBG3risziXwN2hcwFNm3">项目</th><th data-page-node-id="2sMckCNTbuQb2FggKALMhM">值</th><th data-page-node-id="0eTsaVoxgeJ2tRwJ0kJh97">项目</th><th data-page-node-id="jzJFs6j78amyFFYdCqHRnT">值</th></tr>
-<tr data-page-node-id="c1WBaPm0mmYIrpUpi93hx8"><td data-page-node-id="XtaGoTKJnDGGq5eX53QMrw">分子式</td><td data-page-node-id="EU3fR813bBTKyxfNYXYGsS"><b data-page-node-id="0yGlNYjL238odnUGfvUUHE">C120 H152 O28 Ti6</b></td><td data-page-node-id="PHDibpWm8NsXWGFmj5f9GI">M</td><td data-page-node-id="By2q20CudNiIC8BMuh8wIZ">2329.81 g/mol</td></tr>
-<tr data-page-node-id="wtbraqH7kMl4wGiF1oq0EO"><td data-page-node-id="AUV8fI5yAOl5QGjeYJGnLd">晶系 / 空间群</td><td data-page-node-id="pxzvlrbYuC0KhnNuRn3AXQ">triclinic, P -1 (#2)</td>
-<td data-page-node-id="n8k4egeBtkarAgOeC4Rz2C">Z / Z′</td><td data-page-node-id="cf7EQXuXNKLGhVLQRqmem2">1 / 0.50（分子居于反演中心）</td></tr>
-<tr data-page-node-id="AReVWbQi9uh641FKVdpprC"><td data-page-node-id="RDptMUTiNRU67ksuClQM1R">晶胞</td><td colspan="3" data-page-node-id="JpoAaRoGZrpC1iEBmjx5Jd">a = 14.6464, b = 14.9494, c = 15.8691 Å;
- α = 64.789, β = 65.999, γ = 84.979°
- V = 2856.38 Å³</td></tr>
-<tr data-page-node-id="uxScOEgfELc6THryDFPMwo"><td data-page-node-id="FntEiGgQWZEc0LG4l8wmnM">计算密度 ρ<sub data-page-node-id="9435GXntNOMcVPYCdVI2CE">xtal</sub></td><td data-page-node-id="xJh00zXiNfZxagdN4vwNHm">1.354 g/cm³</td>
-<td data-page-node-id="EgKNcwfPy8dZL4UmhrqljY">Ti 质量分数</td><td data-page-node-id="BakV90D28SQWeQDFWNZ8GA"><b data-page-node-id="GLybuB0hYfeDur4HUDttia">12.33 wt%</b></td></tr>
-<tr data-page-node-id="eN0G66vKfEkgyMth7NPCOj"><td data-page-node-id="1PzvVk9uxZHUFZD8vc33oq">R1 / wR2 / GooF</td><td data-page-node-id="ZkK9dtF9BQXPD6IilNGSAJ">0.0448 / 0.1267 / 1.064</td>
-<td data-page-node-id="ZWSdN1NZTFGlX7STZ5ekAZ">分子尺寸</td><td data-page-node-id="Es4d2w15XCypHgYCV8FVV8">直径 2.24 nm，回转半径 0.76 nm</td></tr>
+<h2>2. Per-case results</h2>
+<table>
+<tr><th>case</th><th>best dose<br>(pC/cm)</th><th>best CD<br>(nm)</th>
+<th>NILS</th><th>LER₃σ<br>stoch (nm)</th><th>LER₃σ<br>total (nm)</th>
+<th>CD=10 nm<br>reachable</th><th>target dose<br>(pC/cm)</th>
+<th>target NILS</th><th>target LER₃σ<br>stoch (nm)</th>
+<th>exposure latitude<br>(pC/cm)</th></tr>
+<tr><td>bulk_40nm_Si670um</td><td>379.0</td><td>15.74</td><td>25.66</td><td><b>0.202</b></td><td>2.573</td><td>True</td><td>92.6</td><td>6.85</td><td>0.487</td><td>[63.98037663215541, 96.97314294819432]</td></tr><tr><td>membrane_40nm_SiNx20nm</td><td>307.8</td><td>15.83</td><td>24.88</td><td><b>0.210</b></td><td>2.574</td><td>True</td><td>71.8</td><td>6.18</td><td>0.544</td><td>[50.78212374238107, 71.81493285572616]</td></tr><tr><td>bulk_23.5nm_Si670um</td><td>536.0</td><td>15.73</td><td>33.35</td><td><b>0.203</b></td><td>2.573</td><td>True</td><td>103.9</td><td>5.13</td><td>0.826</td><td>[101.55905663252658, 130.94477818621422]</td></tr><tr><td>bulk_40nm_crystal_density</td><td>143.6</td><td>15.78</td><td>19.34</td><td><b>0.269</b></td><td>2.579</td><td>True</td><td>26.0</td><td>6.85</td><td>0.479</td><td>[21.10737929360118, 29.16786360260676]</td></tr>
 </table>
+<p class="meta">LER₃σ<sub>total</sub> = 3·√(LER₁σ² + σ<sub>surface</sub>²)
+with σ<sub>surface</sub> = 0.855 nm.</p>
 
-<h3 data-page-node-id="6yq3pZPkvoKD1NPqYp3EH4">1.2 簇核与配体（由图论自动解析）</h3>
-<p data-page-node-id="YbeShxrdSfQCHYkCS9DRWy">去掉金属后对键图做连通分量分割，得到 <b data-page-node-id="7Bg6Q50r4G84HZRyD6bfzs">O4Ti6</b> 无机核 + 有机配体：</p>
-<table data-page-node-id="BtujqILkFf8X4n2zuCaPxe"><tr data-page-node-id="xxiXfFsQyra5DpItco2DU7"><th data-page-node-id="4Sm51iU8GP1xL8owBZhwdO">组分</th><th data-page-node-id="W5pCVDuIIeEzQNiW240AmH">数目</th><th data-page-node-id="NPHmW14cv9AVhsCYQjUEQi">配位方式</th><th data-page-node-id="v4rnxBVUnipxOtgpcg8w0u">化学判据</th></tr>
-<tr data-page-node-id="GmaGTEU27avwrYWtYZ1CGw"><td data-page-node-id="crYYet5Bt9OBxIB7hHv96W"><b data-page-node-id="Ng1b6TbWWNUdH28lfZkTkP">C18H16O2</b></td><td data-page-node-id="vc2Scnb5EBNe9OHzK0zJH0">2</td><td data-page-node-id="1rjNWOhkGKnFHtQOVENLiS">k:1Ti x2 → Ti1,Ti2</td><td data-page-node-id="5FFD44FXoU9O2c2qv1CDwu">phenolate/alkoxide-type (C-O ~1.35 A); 2 aromatic ring(s); 2 C=C (allyl/vinyl)</td></tr><tr data-page-node-id="4qadziuOQornZZd1h6PCjG"><td data-page-node-id="AIyYqVQy6RiIiNbUnG5Oze"><b data-page-node-id="lv4ZfgFzCobzTyNxhXWclj">C18H16O2</b></td><td data-page-node-id="VTBEFEuJcCJ1uhvBJLIz3q">2</td><td data-page-node-id="SMa9siCiSmGpEza5vFiiD1">k:1Ti x1,2Ti x1 → Ti1,Ti3</td><td data-page-node-id="EJ0CgXYyXIkvJ7olymdycD">phenolate/alkoxide-type (C-O ~1.35 A); 2 aromatic ring(s); 2 C=C (allyl/vinyl)</td></tr><tr data-page-node-id="XtePJ8l9uG8AHoZkB35auE"><td data-page-node-id="oGW6EU4nfIy4Hgwd1m453v"><b data-page-node-id="Zy38fvcn3Z2IKDow7M8dBW">C6H11O2</b></td><td data-page-node-id="DsIoRZUgjSxzxqMIzAEMVV">2</td><td data-page-node-id="IOv3gH73Hp1DrUcGcysxAy">k:1Ti x2 → Ti1,Ti2</td><td data-page-node-id="8X2ANMW6GLmNKT0EGWNKPV">carboxylate-type (C-O ~1.26 A)</td></tr><tr data-page-node-id="RUWYXUmkDXlskBWThpEIzq"><td data-page-node-id="rOLTTpq2pgBWadOFDC0HJo"><b data-page-node-id="WAl81K9zWTluuf8JLWCIcy">C6H11O2</b></td><td data-page-node-id="17UhDfJJZWOd04Hq5X2nmW">2</td><td data-page-node-id="KKoUfa9nBQLc1xVAlsfMlI">k:1Ti x2 → Ti1,Ti3</td><td data-page-node-id="kBIzsbwwEukb1Ua3yEdK1I">carboxylate-type (C-O ~1.26 A)</td></tr><tr data-page-node-id="McxSlN5YwwxYXrds5cL7DT"><td data-page-node-id="UABXgaQGzOQyQLHMJMFJx0"><b data-page-node-id="Cp1FBjlPSt9DA1o5cjAPij">C6H11O2</b></td><td data-page-node-id="sNJYCq6fIn4RN3EQhq3X7I">4</td><td data-page-node-id="UgwoQ5my7CEEnfHjOYznr6">k:1Ti x2 → Ti2,Ti3</td><td data-page-node-id="f7oML4V7xwEf1Aw23IFgEy">carboxylate-type (C-O ~1.26 A)</td></tr><tr data-page-node-id="debGkHHjuXjjHfjRQmP7Vg"><td data-page-node-id="TCTdcFEPfIlQzydwutZBpp"><b data-page-node-id="VebveRO34QniU1j50T8a90">O</b></td><td data-page-node-id="jUhbThHKvy03tCWfJTmZze">2</td><td data-page-node-id="gpNpF8TPg7SRBxOocwJo4Q">k:3Ti x1 → Ti1,Ti2,Ti3</td><td data-page-node-id="J4GdKOBKuxKbwOyHFK8HMP">oxo</td></tr><tr data-page-node-id="uDzqEkoXcFijtHPDdNRy9X"><td data-page-node-id="YHNuKcNONAVt493zSmRMgd"><b data-page-node-id="CF3BZPMAKyDKirsKT5VKhJ">O</b></td><td data-page-node-id="Rkh65tM0peUYEHMx3O37w2">2</td><td data-page-node-id="acV7DIemWWsG3BFUctzP97">k:2Ti x1 → Ti2,Ti3</td><td data-page-node-id="y78DApcd8kWNa7lJDqP1wK">oxo</td></tr>
-</table>
-<ul data-page-node-id="5sX5cJGxTPxLPsU6yEDqtF">
-<li data-page-node-id="sXqJoAFWjxRz05n7ANDkdq"><b data-page-node-id="XFDY7jteFuxmFIu9xFpbjd">无机核</b>：6 个 Ti 均为六配位（TiO₆），由 <b data-page-node-id="o5EWZWlBTjXFEgh1mC9BcT">2 个 μ₃-O</b> 与 <b data-page-node-id="c5JNHzOjbdzOHJ4K3ysoou">2 个 μ₂-O</b> 桥连，
- Ti···Ti 距离 3.13–8.90 Å（桥连边集中在 3.13–3.48 Å）。</li>
-<li data-page-node-id="1pwVZKXDfWl2tDgvVc6CKB"><b data-page-node-id="wLlWucJSzzMaCKOkEczjO4">C6H11O2（×8）</b>：两个 O 同接一个羧基碳（C–O ≈ 1.26 Å），即 <b data-page-node-id="CF8mpkQ97RksYOepFe6W2i">正己酸根 (hexanoate)</b>，
- 以 syn-syn 双齿桥连两个 Ti。</li>
-<li data-page-node-id="0MY4mInuYQB19JGosoNIBE"><b data-page-node-id="nxFjnLeZTyX1H7Zs2VWsXF">C18H16O2（×4）</b>：含 <b data-page-node-id="63FHwHYCPl4OxOgAXAHNUX">2 个芳环 + 2 个 C=C（烯丙基）</b>，O–C ≈ 1.35 Å（酚氧），
- 环-环直接相连 → 即 <b data-page-node-id="2xYfBjfHsU3ruE3jicq3es">5,5′-二烯丙基-2,2′-联苯二酚（厚朴酚 magnolol，文件名中的 “hpf”）的双阴离子</b>。</li>
-<li data-page-node-id="QG627IwySRh6RH3SI5Avrr"><b data-page-node-id="rQ3SXFNlFIu9o8GHMz3ZRN">电荷平衡</b>：Ti(IV)₆ = +24，O²⁻₄ = −8，己酸根⁻ ×8 = −8，厚朴酚根²⁻ ×4 = −8 → 中性。</li>
-</ul>
-<div class="key" data-page-node-id="yZS3gmB9Hm3WhyWULYOQUy"><b data-page-node-id="Zk4nDZenOzbpeB7Yv0dc8n">对光刻的意义</b>：这是一颗 <b data-page-node-id="nQIwuGDEajAII6uNFOmTBQ">可聚合的金属氧簇（Ti-MOC）负性胶</b>——Ti₆O₄ 核提供
-高 EUV/离子吸收截面与刻蚀抗性，8 条己酸根保证溶解性，4 个厚朴酚根带 <b data-page-node-id="kwk8WjXJaiRAqRPZufbsGj">4 个可交联烯丙基</b>，
-曝光后自由基/阳离子交联导致溶解性反转。分子直径 2.24 nm，
-Ti 含量 12.3 wt%，是决定最终 LER 极限的“分子像素”尺寸。</div>
+<h2>3. Crystal structure &mdash; <code>data/4.cif</code></h2>
+<table><tr><th>formula</th><td>C120 H152 O28 Ti6</td>
+<th>FW</th><td>2329.81</td></tr>
+<tr><th>crystal system</th><td>triclinic</td>
+<th>space group</th><td>P -1 (#2)</td></tr>
+<tr><th>Z / Z'</th><td>1 / 0.5</td>
+<th>ρ_calc</th><td>1.354 g/cm³</td></tr>
+<tr><th>R1 / wR2</th><td>0.0448 / 0.1267</td>
+<th>GoF</th><td>1.064</td></tr>
+<tr><th>molecule extent</th><td>2.2433583657912304 nm</td>
+<th>Ti mass fraction</th><td>0.123272713225542</td></tr></table>
+<h3>Ligand inventory</h3><table><tr><th>label</th><th>count</th><th>role</th></tr><tr><td></td><td>2</td><td></td></tr><tr><td></td><td>2</td><td></td></tr><tr><td></td><td>2</td><td></td></tr><tr><td></td><td>2</td><td></td></tr><tr><td></td><td>4</td><td></td></tr><tr><td></td><td>2</td><td></td></tr><tr><td></td><td>2</td><td></td></tr></table>
 
-<h3 data-page-node-id="64wHqHQwMIfqclnFQ2IDeZ">1.3 从单晶密度到胶膜密度</h3>
-<table data-page-node-id="GIByAE2CxtSxRb1lmtK2I9">
-<tr data-page-node-id="3JWiRZzrjwFJZZyOpByRS5"><th data-page-node-id="ZdqgdsHAml09qHQMWQx5iI">单晶 (100 K) 密度</th><td data-page-node-id="HyIlFNDsGv55fSvweC7lYs">1.354 g/cm³</td></tr>
-<tr data-page-node-id="ZHYDhy9ayla0HUMj81ApDw"><th data-page-node-id="5LTqQ9M0Raw3MgwW4whwUl">XRR 实测胶膜密度 (Leptos, sample 4)</th><td data-page-node-id="cpBhAp4TOetCfmKR7wWAn2">0.7708 g/cm³</td></tr>
-<tr data-page-node-id="71eWYSrbdhPGLIuYi488mW"><th data-page-node-id="Ea9huK9LGRUytwPRU6maGb">致密化比例 ρ_film / ρ_xtal</th><td data-page-node-id="jtrbSUtxqbCgLFoZBtNoYc">56.9%  → 旋涂膜约 43% 自由体积（残余溶剂/疏松堆积）</td></tr>
-<tr data-page-node-id="jF8P3SfyO2KZDBqZsRqTKn"><th data-page-node-id="XcHn04iGIjlIqw6RE18LG4">XRR 膜厚 / 粗糙度</th><td data-page-node-id="sNNUFl0efFzjSqkkT7v1ss">23.74 nm / 0.73 nm</td></tr>
-<tr data-page-node-id="2WhxwvN7LKCbH9hJs1Rsxm"><th data-page-node-id="pGuu8STzOIrbRxG3LVM5NM">电子密度 (胶膜)</th><td data-page-node-id="LCnSnMTr6HcP1n3sOY8S7P">0.2447 e⁻/Å³  →  2θ_c = 0.262° (Cu Kα)</td></tr>
-<tr data-page-node-id="ZUN5hIYBlpF6NAPrAxgb85"><th data-page-node-id="09HUbzJcLFQch382wdd94h">每克电子数 Z/A</th><td data-page-node-id="1XYmtzj02FlxC3xu1caWby">0.5271 mol e⁻/g（Si 为 0.4985，故低能段质量阻止本领更高）</td></tr>
-</table>
-<div class="note" data-page-node-id="wR4uTIL4rMTN0tvxXBHrSC">注意：XRR 测得的是 <b data-page-node-id="ZHROimgoz3exQRju1kfe7I">23.74 nm</b>，本次按用户指定的 <b data-page-node-id="SrWKMNEEFJ4ffJqXvfgaQG">40 nm</b> 建模；
-两者在工艺窗口图（图 4c）中均已标出，结论见 §4。</div>
+<h2>4. Hazards &amp; process</h2>
+<table><tr><th>contrast</th><td>
+D<sub>0</sub> = 0.56 pC/cm ·
+D<sub>100</sub> = 88 pC/cm ·
+γ = 0.46
+(model-derived; no development data)</td></tr>
+<tr><th>sputter</th><td>
+Y = 3.78e-03 atoms/ion;
+removed = 1.76e-03 nm
+(He → Ti-cluster, Sigmund, negligible)</td></tr>
+<tr><th>beam heating</th><td>
+&ltT&gt;<sub>scan</sub> = 4.9e-08 K;
+&ltT&gt;<sub>worst</sub> = 2.0e-07 K;
+safe = True</td></tr>
+<tr><th>3-D line</th><td>
+CD = 8.26 nm;
+LER₃σ = 4.04 nm;
+LWR₃σ = 4.04 nm;
+ξ = 4.0 nm
+</td></tr></table>
 
-<h2 data-page-node-id="gOLHuiOA1m6tZkGixBeIyz">2. 物理模型与标定</h2>
-<table data-page-node-id="DTMMlBVaNht5nvYWz8U1i6">
-<tr data-page-node-id="8sSOSgTUyYuqAE2m3Igjva"><th data-page-node-id="GhMAq2a06YRZ7Dhx4GOqJk">电子阻止本领</th><td data-page-node-id="ZE0OEzjcEJ7JL9nZGHThqP">Lindhard–Scharff（S_e ∝ v ∝ √E），Bragg 加和；整体乘标定因子</td></tr>
-<tr data-page-node-id="UIifkla9Z6qQljXnby1BW3"><th data-page-node-id="J2qV01YlO8qufzZr37bI1O">核阻止本领</th><td data-page-node-id="UKRRxgoaHYUZwI0cKM9Edh">ZBL 通用 s_n(ε)，Bragg 加和</td></tr>
-<tr data-page-node-id="qQMEFdVWEKbg4AzOH35nAr"><th data-page-node-id="vtATjXGXEcfAh6yCbkCLsH">角散射</th><td data-page-node-id="LoQwOH1du9mXppLli4FeDO">屏蔽卢瑟福（θ<5° 多重散射 + 离散大角碰撞），屏蔽参数 α(E) 由匹配 ZBL 核阻止反解</td></tr>
-<tr data-page-node-id="PQDEzHyIFEGM5h5Bi5FOmp"><th data-page-node-id="cKN4801oy7eGFLu2opnKlP">标定 1（射程）</th><td data-page-node-id="53vZ36et3AGgnpZyaEt4nr">e_scale = 1.40 → 30 keV He⁺ 在 Si 中的投影射程 = 282 nm（SRIM 282.2 nm，误差 &lt;1%）</td></tr>
-<tr data-page-node-id="eefyaviRVP7blCG7e6E6tC"><th data-page-node-id="qO6ZucVT5OerSpKppJvixp">标定 2（随机项）</th><td data-page-node-id="dyuz2o1IpFup302q2mdqVW">a_eff = 9.17 nm²，使悬空膜基准的最小 LER(3σ) = 0.21 nm（Zhuang et al. 2024 实测值）</td></tr>
-<tr data-page-node-id="RJkXfcWECDWDDIhANuXypn"><th data-page-node-id="AaDIWGtH9XhhQBSivYBJMF">曝光事件能量 w_SE</th><td data-page-node-id="tYeBJpnSnrukMjtP8iZ2ts">20 eV/事件（二次电子产生能）</td></tr>
-<tr data-page-node-id="Y43wtYjCcDApgPedj4UYoH"><th data-page-node-id="51jumJOIFPkCfSqWEV5bwu">凝胶阈值 ρ_gel</th><td data-page-node-id="EF421H4CuVcdL179OQjSe2">15 eV/nm³（负性胶交联阈值，典型 10–30）</td></tr>
-</table>
-<p data-page-node-id="C9GnT0TApbWtRbys8dWpyg">随机 LER 采用 <code data-page-node-id="hkr53wMrMGbdNJU8khCXU4">σ_LER = CD /(NILS·√(n_A·a_eff))</code>，其中 n_A = 边缘处曝光事件面密度
-= E_th / w_SE；该式在固定 CD 下退化为 Mack 标度律 <code data-page-node-id="iR0RCE3xh1ONiTQW0kJYDV">σ ∝ 1/(NILS·√Dose)</code>。</p>
+<h2>5. Figures</h2>
+<h3>fig1_structure.png</h3><img src="fig1_structure.png" alt="fig1_structure.png"><p class="meta">Single-crystal structure of the Ti₆-oxo cluster resist (parsed from data/4.cif).</p><h3>fig2_xrr.png</h3><img src="fig2_xrr.png" alt="fig2_xrr.png"><p class="meta">XRR fit (Parratt recursion) of the 23.5 nm film: ρ = 0.700 g/cm³, σ = 0.855 nm.</p><h3>fig3_transport.png</h3><img src="fig3_transport.png" alt="fig3_transport.png"><p class="meta">He⁺ ion transport: trajectories, depth-dose Bragg curve and energy partition for the bulk-Si and suspended-membrane stacks.</p><h3>fig4_psf_nils.png</h3><img src="fig4_psf_nils.png" alt="fig4_psf_nils.png"><p class="meta">Radial PSF (95% CI) → LSF → CD/NILS for the two reference cases.</p><h3>fig5_ler_window.png</h3><img src="fig5_ler_window.png" alt="fig5_ler_window.png"><p class="meta">LER(3σ) vs dose (U-curve), CD vs dose, and 2-D process window; thickness-scan summary inset.</p><h3>fig6_design.png</h3><img src="fig6_design.png" alt="fig6_design.png"><p class="meta">Design closure: contrast curve, sputter, beam heating, and 3-D latent-image simulation.</p>
 
-<h2 data-page-node-id="NTSv5UPnQN3NOzGhlgWNxL">3. 结果：40 nm 胶 / 670 µm Si</h2>
-<h3 data-page-node-id="35Mh0JoEPRYplLlQhkb3lS">3.1 单离子能量收支</h3>
-<table data-page-node-id="5ocbOm7a8tobKiDVdpxHFm"><tr data-page-node-id="BXE1MMJ3zjFWieX19qtMJJ"><th data-page-node-id="ABa9dDX5WVulsPJUmMucm5">通道</th><th data-page-node-id="yLHmTrtKQ9Rh8EJDQZKHb4">eV/离子</th><th data-page-node-id="BFXDN4MlRgKYHo8yNKWAGb">占比</th><th data-page-node-id="wOlhnXF5F6VC7gDBf6W6Ye">含义</th></tr>
-<tr data-page-node-id="cQf20hCODSj6CBVlMFbETD"><td data-page-node-id="pZDmq2STJWag1NM3L2GWWL">沉积在光刻胶内（0–40 nm）</td><td data-page-node-id="2p8LfiEkYhLgL20fY3O45u">3331</td>
-<td data-page-node-id="CqsPs4IjDE1W1hzMW3DJjS"><b data-page-node-id="Kh2HPBQ2sg0gaLf3QFAU31">11.1%</b></td><td data-page-node-id="hHsACkryfUvsnLDlxZOquZ">真正用于曝光的能量</td></tr>
-<tr data-page-node-id="VfwO18SeGuH0RFSkDfBWfx"><td data-page-node-id="Aq88j1E2IRz3blPaQXDq0j">衬底近界面（0–24 nm，可回注）</td><td data-page-node-id="ye2pV2TaEYrZnNUUpa2zH8">（其中回注 143 eV）</td>
-<td data-page-node-id="vjHQwrAE3rwRiOWmfIUHKu">—</td><td data-page-node-id="IfggtZVH3qkqDzrM5Mu5lF">SE2 邻近效应背景</td></tr>
-<tr data-page-node-id="Yjfi3a5g8QaRzQOUZpj3a3"><td data-page-node-id="zDhq3oApcTcvvIQSsizGM6">背散射逸出表面</td><td data-page-node-id="2X8PGKbmJJIJNStUwYQqJo">—</td><td data-page-node-id="XpbPWsE1MmzPPc8nBmO0D0">η = 1.07%</td>
-<td data-page-node-id="bGH33MvwzUs5FzJgfvDvOA">EBL 为 30–50%，HIL 低 2 个数量级</td></tr>
-</table>
-<div class="warn" data-page-node-id="6jTRnuOgox50An7prIcDRg"><b data-page-node-id="gGjVKdpqJMjvEE8qQUCNLG">关键结论 1</b>：30 keV He⁺ 在 Si 中的射程约 282 nm，远小于 670 µm，
-因此 <b data-page-node-id="FDbQkvdv2Nd6zy8t3Ih6Cl">衬底厚度完全不影响结果</b>（“670 µm”与“无限厚”等价）；进一步，在 40 nm 胶厚下
-<b data-page-node-id="ojQZ3QfKC9n5dIQGCBV7tS">衬底类型（块体 Si vs 悬空膜）也不是决定性因素</b>：离子在 40 nm 胶内沉积约
-11% 的能量，其余注入衬底，其中块体 Si 以 SE2 形式回注仅
-143 eV/离子（约占胶内剂量的
-4%），对最优 LER 影响可忽略——
-本工况与悬空膜给出几乎相同的 ~0.21 nm（见关键结论 2）。真正的限制来自 PSF 芯部锐度
-（r90≈1.6 nm）与分子像素/随机平均，而非衬底。</div>
+<h2>6. Open items</h2>
+<div class="open">Absolute dose axis is not calibrated: rho_gel and w_SE are assumed and a_eff is back-fitted, so dose values are model-relative.</div><div class="open">The surface-to-edge roughness transfer coefficient xi is unknown; the report gives a bounded budget instead of a single LER number.</div><div class="open">No development kinetics, CD-SEM or cross-section data, so the contrast curve and sidewall profile remain model-derived.</div>
 
-<h3 data-page-node-id="wLp79SzfZ14QHcCiY1woOs">3.2 PSF / NILS / LER</h3>
-<table data-page-node-id="qBYWIvYBEv57A0tYfjdtbv"><tr data-page-node-id="j06Niz34orbHXp0YCRi0U2"><th data-page-node-id="lfxwwi1q918sx6QtnhAT6t">指标</th><th data-page-node-id="ZXjq9LAn1vcLP5CtzL5N6n">40 nm / 670 µm Si（本工况）</th><th data-page-node-id="8vg05ZKUcXr3dkXIw6LOjz">40 nm / 20 nm SiNx 悬空膜（基准）</th></tr>
-<tr data-page-node-id="GWz9xqCrUfMJL9PQHBpdqb"><td data-page-node-id="AITmiQr8F1Io5lGTrMPiZm">能量包络 r50 / r90 / r99</td><td data-page-node-id="w2Tlzkw63tNFj7EVoFUobn">0.62 / 1.62 / 3.9 nm</td>
-<td data-page-node-id="qdWEPgCaflQMMCGlPCd4Rh">0.62 / 1.62 / 4.4 nm</td></tr>
-<tr data-page-node-id="qqxB0Dq2fIYVQVqadPHwyN"><td data-page-node-id="HjupqnVMykvMbyeZiQXTeD">衬底 SE2 回注能量</td><td data-page-node-id="OIMAaCRZM7Io9nvGEgG3N2"><b data-page-node-id="noRultCCvpKhtN7YGE7UaM">143 eV/离子</b></td><td data-page-node-id="0XQT45j0MVsIAiwSS6aEQ1">245 eV/离子</td></tr>
-<tr data-page-node-id="IsajGDVmASMmrWAKH6yfsA"><td data-page-node-id="awFHk86XV3NhIw5Cn3V225">最佳线剂量</td><td data-page-node-id="9BYUHDvMlhBtWU8RxoTXVC">245 pC/cm</td><td data-page-node-id="BM0EGeKh1k1trUsmP0Ckue">175 pC/cm</td></tr>
-<tr data-page-node-id="EkNVBCNPNzF5fzQntLVPVR"><td data-page-node-id="Ff9CuYx8q6ZOW50crtwGjf">对应线宽 CD</td><td data-page-node-id="frM3G1NGycg2LBSPWUqCO5">7.6 nm</td><td data-page-node-id="67e00RzcZ380HmGuwfVvzF">7.5 nm</td></tr>
-<tr data-page-node-id="zRybUiadRoI3sUt2YJBywM"><td data-page-node-id="BPjZ9hgAhaOTUMPtbFG5lh">NILS</td><td data-page-node-id="1lV36y0w17UtXFLo4vz4qg">6.6</td><td data-page-node-id="jCGbTXAvTRGeplhmF1yrW4">6.5</td></tr>
-<tr data-page-node-id="TDvvcwkSW3ihHi6jcXrUvB"><td data-page-node-id="PjQLKE9tjJrCkpKXPcmkqT"><b data-page-node-id="i5E7xBoiB3PfPXEAd9ERmX">LER 3σ（最佳）</b></td><td data-page-node-id="adI7ltWCPPk5UE9yb3SLQi"><b data-page-node-id="ABs45HaiCB8CJkj0wbLCdi">0.21 nm</b></td>
-<td data-page-node-id="LOfW8MKWVNQt5JkCLiekAQ"><b data-page-node-id="DGZxvsorbiQroxLpjbSDuq">0.21 nm</b></td></tr>
-</table>
-<div class="key" data-page-node-id="ekPxABmWqW1VvxK2gaa1hD"><b data-page-node-id="yiLrij7jpMk38TXnOKgxHA">关键结论 2</b>：换用 670 µm 块体硅衬底后，PSF 芯部几乎不变（He⁺ 准直性由质量决定），
-衬底以 SE2 形式回注 143 eV/离子（占胶内剂量约
-4%）；由于该长程背景较小，最佳 LER 与悬空 SiNx 膜
-<b data-page-node-id="argP9sMx0H0yJhqlCuwkht">基本持平</b>：0.21 nm（膜）→ 0.21 nm（块体），差值 &lt
-0.01 nm，
-而背散射系数仅 1.07%（EBL 为 30–50%）。
-即在此 40 nm 胶厚下衬底类型并非 LER 的决定因素；悬空膜的优势只在更厚胶/更细线宽时显现。
-<span style="color:#8a6d00" data-page-node-id="WOF8Y2rdgz4NXVo7yJ5GeN">（注：LER 绝对值依赖标定的随机平均面积 a_eff，属可行性量级估计；其相对趋势——衬底影响可忽略——是稳健的。）</span></div>
-
-<h3 data-page-node-id="oE0E7z7mBn15cR2mp8PCxx">3.3 胶厚与密度敏感性</h3>
-<table data-page-node-id="m60FSE1ekCmBdmFlUk7PDa"><tr data-page-node-id="kAo49YBkIxlxQeSJrpTsl1"><th data-page-node-id="z6jBHgMnbc8JIS5rBriRmv">变体</th><th data-page-node-id="GGSlabmoahXzWBKtmEQGDq">最佳剂量 (pC/cm)</th><th data-page-node-id="WAQqdzHFLFERWMQNhewWsg">CD (nm)</th><th data-page-node-id="EEyQKrID6ZK008T3f6nMf7">NILS</th><th data-page-node-id="1J9nJZ8VQOmfCA2v7ueAyK">LER 3σ (nm)</th></tr>
-<tr data-page-node-id="hyoGAFyccuqYCElchgGzYh"><td data-page-node-id="bq8D8abDInAlYU7qBHRx67">40 nm / ρ=0.771（本工况）</td><td data-page-node-id="GrZ1X4useRFSzRUuFXM0oA">245</td><td data-page-node-id="9BT3a2YKjPbDFROvC8VFCN">7.6</td>
-<td data-page-node-id="qYyCpXzn2LpAXy2HAnkTVE">6.6</td><td data-page-node-id="1LOfXpWjL4RP66ErxFdUqB">0.21</td></tr>
-<tr data-page-node-id="LW8slyvUBNsTFOF703ifNt"><td data-page-node-id="d7BFPOMYUzTn2hZaOQppfG">23.7 nm（XRR 实测）/ ρ=0.771</td><td data-page-node-id="sIlW2fSzpZdLunoWFtAGeM">11</td><td data-page-node-id="z3eQux9qECntdZUxJQeEkb">1.7</td>
-<td data-page-node-id="aH9ZySXuHMHg8w1iXbBSNg">2.1</td><td data-page-node-id="xCNRV9nYbwg1aNBQKA2xUT">0.15</td></tr>
-<tr data-page-node-id="l7YnWD7u4H98wwRGpkma6c"><td data-page-node-id="glOPnxenDVM1h0NKDfpz6T">40 nm / ρ=1.354（单晶致密）</td><td data-page-node-id="CPsTdU0Zsm8rxYKeBIs3Yg">96</td><td data-page-node-id="zHZpcrsyHCcvkTW2vMzy4D">7.5</td>
-<td data-page-node-id="pjU9pOM0gTCA4GQhOptKmJ">5.8</td><td data-page-node-id="NuQstpmYZRjNp2cQ5AoLOJ">0.23</td></tr>
-</table>
-<p data-page-node-id="XL6HTx6PFJypum3P5JYgnw">胶厚扫描（15–80 nm）显示：最优 LER 在 20–60 nm 区间基本持平（~0.18–0.21 nm，弱 U 型、谷底约 50–60 nm），
-增至 80 nm 才回升到 ~0.27 nm；即<b data-page-node-id="ipQpyQzZ6B9EjIOT3MNFCd">本工况 40 nm 并非明显吃亏</b>，减薄到 20–25 nm 仅带来
-≈0.01–0.02 nm 的边际收益。密度方向：40 nm 下 ρ 由 0.771 提到 1.354，最优 LER 反而由
-0.21 升到 0.23 nm（更高密度使达到凝胶阈值所需剂量更低、
-但 PSF 略宽、NILS 略降）；该对比受 a_eff 标定锚定（已对准低密度膜）影响，属模型内相对趋势，
-不宜外推为“密度越高越好”。主要可控杠杆仍是<b data-page-node-id="I9B8BMKCPCGMbIZhifrN4X">剂量优化 + 对准无衬底回注的几何</b>。</p>
-
-<h2 data-page-node-id="JXiEFEsaNb9GljvbcjdfKs">4. 图集</h2>
-<div class="figure" data-page-node-id="FDlBmm8EPvh8THuMM3GR5h"><img src="fig1_structure.png" data-page-node-id="MgV9g5CsYL84bCAOrPtBI6"><div class="cap" data-page-node-id="SOyZlz5GxuTFVMzmEWCaOi">图 1 · 4.cif 单晶结构解析：Ti6 簇核（蓝球）、分子几何与晶体学/精修参数。</div></div>
-<div class="figure" data-page-node-id="ZECr0Acuuc2mKwuGJsYsfo"><img src="fig2_stack_energy.png" data-page-node-id="ygvklVMEZp6Ax6Z1dmjKmX"><div class="cap" data-page-node-id="iGXvn6IsU07OYGWNlFi2x5">图 2 · 堆栈与能量学：MC 轨迹、胶内深度沉积分布、单离子能量收支、背散射粒子出射半径分布。</div></div>
-<div class="figure" data-page-node-id="Sp5t8sTjDKQEYCH1zf6tru"><img src="fig3_psf_nils.png" data-page-node-id="QGOBzgR27YI9AM1s7ga4aG"><div class="cap" data-page-node-id="xVwP0lBwkIJ4VGee43RFj9">图 3 · 点扩散函数（bootstrap 95% CI）、线扩散函数及其衬底 SE2 分量分解、NILS-线宽关系。</div></div>
-<div class="figure" data-page-node-id="FEziWSFHqmTNpVEIIw5T9q"><img src="fig4_ler_window.png" data-page-node-id="mFbfZUk8R6ECgLDt1HMQOj"><div class="cap" data-page-node-id="v9HiyuIVX0yBJAU1AkZLlB">图 4 · 随机 LER 的 U 型剂量窗口、线宽-剂量曲线，以及 LER(剂量, 胶厚) 二维工艺窗口。</div></div>
-
-<h2 data-page-node-id="4m47sK0k3W4XuQdAAzr5DV">5. 给实验的建议</h2>
-<ul data-page-node-id="zFsOa5ycAKEjVxVou28pom">
-<li data-page-node-id="Jzy9QDV3gF6MaRDGb5GkHj"><b data-page-node-id="W6KVNFly68xxSzFsHaxyPM">衬底</b>：本工况（40 nm 胶 / 670 µm 块体 Si）的最佳 LER 与悬空 20 nm SiNx 膜
-<b data-page-node-id="4QE5mZgeUAOkQZdTUhLUqH">基本持平</b>（0.21 nm → 0.21 nm，差值 &lt;0.01 nm），
-因此<b data-page-node-id="wYNfn0XEnLdAYMZv7CJIkc">在 40 nm 胶厚下不必强求悬空膜</b>。原因：块体 Si 的背散射系数仅 1.07%
-（EBL 为 30–50%），衬底以 SE2 形式回注仅 143 eV/离子
-（约占胶内剂量 4%），长程背景很小，对边缘陡度影响可忽略。
-若后续把胶厚减到 20–25 nm 或把线宽压到 &lt;10 nm，SE2 在更薄胶中的占比上升，悬空膜/低 Z 盖层的优势才会显现——
-届时再考虑悬空 SiNx 或 Si 上先长 20–30 nm 低 Z 中间层（注意：低 Z 盖层只能抑制回注比例，<b data-page-node-id="axmk3aKU9b3gu3oNYuMcC3">不能消除</b> SE2）。</li>
-<li data-page-node-id="SdRR3ph3QlTiyzXxDyk6wz"><b data-page-node-id="MEX3BexCQNsFNHwcVeHmwM">胶厚</b>：扫描显示 20–60 nm 区间最优 LER 基本持平（~0.18–0.21 nm），仅 80 nm 才明显回升；
-<b data-page-node-id="oBspOHtBU9KzOkuAtwObgk">40 nm 并非明显吃亏</b>，减薄到 20–25 nm 仅有 ≈0.01–0.02 nm 的边际收益。除非机械强度要求，无需强求更薄。</li>
-<li data-page-node-id="YvquPyhxZGQeUnMdCbGV9o"><b data-page-node-id="RyPFxMB4SAB1RnVGCns6RZ">剂量</b>：取 LER 谷底（本工况 ≈ 245 pC/cm），
-低于此值进入散粒噪声区，高于此值 PSF 拖尾（含 SE2 平台）主导，线宽迅速变粗。</li>
-<li data-page-node-id="UivAnTnGOKjA61okfpJ1MJ"><b data-page-node-id="778HiGrC3pHRrSdiZH0mT7">致密化</b>：本模型下 40 nm 胶 ρ 由 0.771 提到 1.354，最优 LER 反而由 0.21 升到
-0.23 nm（但所需剂量降至 96 pC/cm，产率提升）。故致密化<b data-page-node-id="1YX5A1j4aPv9xa7CsegIru">利好产率而非随机 LER</b>；
-若以压低 LER 为首要目标，优先优化几何（悬空/低 Z 盖层）与剂量，而非单纯提高密度。</li>
-<li data-page-node-id="qqT6bTiXH7fJC1UVyhuq8L"><b data-page-node-id="BUTUdH9EeAbZO3jInWG8ry">配体设计</b>：厚朴酚根的 4 个烯丙基是可交联位点；提高交联密度（或引入更高吸收的 Zr/Hf 核）
-可进一步提升灵敏度并降低随机噪声。</li>
-</ul>
-
-<h2 data-page-node-id="RoRSdG2mlwDWDGs4AgcW2y">6. 复现</h2>
-<p data-page-node-id="Am6rKMOHAov5zkozHx0XvU"><code data-page-node-id="GARHI11Li5IlYFVI1VOHT1">python run_case.py</code>（依赖 numpy / scipy / matplotlib；
-核心代码在 <code data-page-node-id="nzrHDEqMGcQ63gzKEJE33R">src/hil_mc/</code>：<code data-page-node-id="D7vHhPixshbjhADSNd9fNZ">cifio</code> 解析 CIF，<code data-page-node-id="3CvzIGzyDotT4YwVcw47rw">structure</code> 做簇化学解析，
-<code data-page-node-id="eyr3BEgCWvd58cqG1nw32C">materials</code> 计算阻止本领，<code data-page-node-id="Cj6EUDqIhrbQl2K1taRMDE">mc</code> 做输运，<code data-page-node-id="CagOxqu9G1mCBiu3leBfvJ">metrics</code> 做 PSF/NILS/LER）。</p>
-</body></html>
+<hr><p class="meta">
+HIL stochastic lower bound for LER₃σ ≈ 0.21 nm (40 nm Ti-cluster /
+670 µm Si, 30 keV He⁺); sub-nm reference target IRDS &lt; 0.5 nm.
+All numbers above are model-derived; see <code>results.json</code> for the
+machine-readable dump and <code>run.log</code> for the full log.
+</p></body></html>
