@@ -30,8 +30,13 @@ def test_design_constants():
     assert rc.RESIST_THICKNESS_NM == 40.0
     assert rc.SUBSTRATE_THICKNESS_NM == 670_000.0
     assert rc.BEAM_ENERGY_KEV == 30.0
-    assert 0.7 < rc.XRR_DENSITY < 0.8            # XRR as-cast film density
-    assert 0.6 < rc.XRR_ROUGHNESS_NM < 0.9       # XRR surface roughness
+    assert abs(rc.A_EFF - 9.17) < 0.5       # back-fitted calibration constant
+    # XRR fit is the source of truth for film density & surface roughness;
+    # verify the live fit (loose bounds cover fit uncertainty).
+    analysis = analyse_cif(CIF)
+    _xrr_data, xrr_fit = rc.step_xrr(analysis)
+    assert 0.5 < xrr_fit.density_g_cm3 < 0.9
+    assert 0.3 < xrr_fit.sigma_film_nm < 1.5
 
 
 # ---------------------------------------------------------------------------
@@ -55,7 +60,8 @@ def test_cif_interpretation_is_stable():
 @pytest.fixture(scope="module")
 def small_run():
     analysis = analyse_cif(CIF)
-    resist, _xtal, si, _sin, _pmma = rc.step_materials(analysis)
+    _xrr_data, xrr_fit = rc.step_xrr(analysis)
+    resist, _xtal, si, _sin = rc.step_materials(analysis, xrr_fit)
     stack = make_stack(resist, si, rc.RESIST_THICKNESS_NM,
                        rc.SUBSTRATE_THICKNESS_NM, e_scale=rc.E_SCALE)
     mc = HeMonteCarlo(stack, rc.BEAM_ENERGY_KEV, seed=99, box_nm=80.0)
@@ -120,7 +126,8 @@ def test_trajectories_record_depth_correctly(small_run):
 # ---------------------------------------------------------------------------
 def test_lsf_and_nils_are_consistent():
     analysis = analyse_cif(CIF)
-    resist, _x, si, _s, _p = rc.step_materials(analysis)
+    _xrr_data, xrr_fit = rc.step_xrr(analysis)
+    resist, _x, si, _s = rc.step_materials(analysis, xrr_fit)
     res = rc.run_case(resist, si, rc.RESIST_THICKNESS_NM, 4000, seed=7)
     x, lsf = rc.converged_lsf([res.exposure_map], res.pixel_nm)
     lsf = rc.smooth_tail(x, lsf, r_min=8.0)

@@ -22,6 +22,7 @@ ignore = [
 "scripts/export_master_report_pdf.py" = ["E501", "E702", "E701", "E402"]
 "scripts/analyze_xrr_sample4.py" = ["E501", "E702", "E701", "E402"]
 "scripts/generate_final_experiment_suite.py" = ["E501", "E702", "E701", "E402"]
+"scripts/compare_hil_ebl.py" = ["E501", "E702", "E701", "E402"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

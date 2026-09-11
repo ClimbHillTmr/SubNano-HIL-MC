@@ -1,0 +1,106 @@
+<!doctype html><html lang="zh"><head><meta charset="utf-8">
+<title>HIL vs EBL — 电子扩散 / 邻近效应 / LER</title>
+<style>
+ body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:1000px;
+      margin:32px auto;padding:0 20px;color:#1a1a1a;line-height:1.62;font-size:15px}
+ h1{font-size:24px;margin-bottom:4px} h2{font-size:18px;margin-top:30px;
+      border-bottom:1px solid #e6e6e6;padding-bottom:5px}
+ .sub{color:#666;font-size:13px;margin-bottom:22px}
+ table{border-collapse:collapse;width:100%;margin:14px 0;font-size:13px}
+ th,td{border:1px solid #e3e3e3;padding:6px 9px;text-align:center}
+ th{background:#f6f8fa;font-weight:600} td:first-child{text-align:left}
+ .key{background:#fff8e6;border-left:4px solid #d9a300;padding:11px 15px;margin:16px 0}
+ .warn{background:#fdeeee;border-left:4px solid #c0392b;padding:11px 15px;margin:16px 0}
+ .ok{background:#eef7f2;border-left:4px solid #2a9d8f;padding:11px 15px;margin:16px 0}
+ code{background:#f3f3f3;padding:1px 5px;border-radius:3px;font-size:13px}
+ img{width:100%;margin:14px 0;border:1px solid #eee}
+ .foot{color:#777;font-size:12.5px;margin-top:30px;border-top:1px solid #eee;padding-top:12px}
+</style></head><body>
+
+<h1>氦离子光刻 vs 电子束光刻：电子扩散、邻近效应与线边缘粗糙度</h1>
+<div class="sub">同一叠层：Ti₆-氧簇胶 40 nm / Si(001) 670 µm ｜ He⁺ 30 / 100 keV（蒙特卡洛）
+｜ e⁻ 30 / 100 kV（文献双高斯 PSF）<br>生成于 2026-09-10 20:47:18 ·
+<code>scripts/compare_hil_ebl.py</code></div>
+
+<h2>1. 结论摘要</h2>
+<div class="key"><b>核心发现</b>：在<u>孤立线</u>口径下，HIL 的边缘锐度由二次电子离域决定
+（LSF 半高宽约 2.3 nm），而 EBL 由前散射范围 α 决定。
+文献参数下 30 kV EBL 的 α ≈ 59 nm、
+100 kV ≈ 7.3 nm —— 即
+<b>升压只把 EBL 的模糊从几十 nm 压到约 10 nm</b>，而 HIL 天然处于 ~1 nm 量级。</div>
+<div class="ok"><b>最关键的物理差异不是"边缘有多陡"，而是"能量落到哪里"</b>：
+EBL 有 <b>43%</b>
+的沉积能量来自背散射电子、铺展在 β ≈ 4–31 µm 尺度上
+（η ≈ 0.74）；HIL 的对应长程本底只有
+<b>4.37%</b>
+（衬底 SE2 回注），离子背散射仅 1.478%。
+这正是 HIL 在<b>密排图形（光栅）</b>中邻近效应可忽略的根源。</div>
+<div class="warn"><b>必须诚实说明的边界</b>：在<u>大线宽</u>（CD ≳ 50 nm）下，双高斯 EBL 的
+边缘斜率随 CD 增大而变陡，其 LER 会逼近甚至优于 HIL 的幂律尾部（见 §4 表与图 d）。
+HIL 的决定性优势集中在 <b>小线宽（CD ≲ 20 nm）</b>，也正是亚纳米 LER 与高分辨光栅所关注的区间；
+密排图形中 EBL 还要再叠加 η≈0.74 的图案密度依赖本底，HIL 没有这一项。</div>
+
+<h2>2. 方法：为什么两条路径可以同台比较</h2>
+<p>两支束流走<b>同一套显影边缘模型</b>：显影边界是线扩散函数跨越抗蚀剂阈值的位置，
+像对数斜率 NILS = CD·|dlnE/dx|，随机 LER 用项目既有公式</p>
+<p style="text-align:center"><code>LER(3σ) = 3·CD / (NILS·√(n_A·a_eff)) = 3·σ_edge / √(n_A·a_eff)</code></p>
+<p>其中 n_A = ρ_gel·t/ω_SE = 30 events/nm²、a_eff = 9.17 nm²
+<b>两支束流取同一组值</b>（抗蚀剂化学相同），因此差异<b>完全归因于 PSF 形状</b>。
+又因显影边界只取决于「阈值/剂量」之比，扫描该比值等价于扫描剂量，
+所得 (CD, NILS) 轨迹与绝对剂量标定无关——这才使 He⁺ 蒙特卡洛的绝对单位（eV/nm/ion）
+与电子的任意单位可以直接对照。注意 LER 可化简为 3σ_edge/√(n_A·a_eff)，
+<b>CD 只通过"边缘落在哪里"进入</b>。</p>
+
+<h2>3. 曝光离域与邻近本底</h2>
+<img src="fig_hil_vs_ebl.png" alt="HIL vs EBL comparison">
+<table>
+<tr><th>束流</th><th>LSF FWHM (nm)</th><th>PSF r50 (nm)</th><th>PSF r90</th><th>PSF r99</th>
+<th>η (背散射比)</th><th>长程本底占比</th></tr>
+<tr><td>HIL 30 keV</td><td>2.30</td><td>1.12</td><td>3.37</td><td>11.11</td><td>—</td><td>4.37%</td></tr><tr><td>EBL 30 kV</td><td>98.8</td><td>84.0</td><td>4.8 µm</td><td>7.7 µm</td><td>0.74</td><td>42.5%</td></tr><tr><td>HIL 100 keV</td><td>1.90</td><td>0.87</td><td>1.87</td><td>5.62</td><td>—</td><td>4.18%</td></tr><tr><td>EBL 100 kV</td><td>12.2</td><td>10.4</td><td>37.5 µm</td><td>60.4 µm</td><td>0.74</td><td>42.5%</td></tr>
+</table>
+<p><b>读法</b>：EBL 的 r90/r99 落在 µm 量级——那不是"分辨率"，而是
+<b>背散射晕</b>（42.5% 的能量铺在 β 尺度上）。对孤立线而言该晕近乎均匀、不改变局部梯度，
+但它意味着近一半的入射能量并不贡献图形对比度，并造成图案密度依赖的邻近效应。
+HIL 无此通道。</p>
+
+<h2>4. 结果：LER 对比</h2>
+<table>
+<tr><th>束流</th><th>最佳 LER 3σ (nm)</th><th>对应 CD (nm)</th><th>边缘模糊 σ_edge (nm)</th></tr>
+<tr><td>HIL 30 keV</td><td>0.126</td><td>1.6</td><td>0.70</td></tr><tr><td>HIL 100 keV</td><td>0.064</td><td>3.7</td><td>0.35</td></tr><tr><td>EBL 30 kV</td><td>3.747</td><td>200.0</td><td>20.72</td></tr><tr><td>EBL 100 kV</td><td>0.288</td><td>36.5</td><td>1.59</td></tr>
+</table>
+<p>固定线宽下的随机 LER 3σ（单位 nm）：</p>
+<table><tr><th>束流</th><th>CD = 5 nm</th><th>CD = 10 nm</th><th>CD = 20 nm</th><th>CD = 50 nm</th><th>CD = 100 nm</th></tr>
+<tr><td>HIL 30 keV</td><td>0.18</td><td>0.21</td><td>0.16</td><td>4.21</td><td>—</td></tr><tr><td>HIL 100 keV</td><td>0.10</td><td>0.26</td><td>—</td><td>—</td><td>—</td></tr><tr><td>EBL 30 kV</td><td>—</td><td>—</td><td>31.71</td><td>12.70</td><td>6.41</td></tr><tr><td>EBL 100 kV</td><td>1.93</td><td>0.97</td><td>0.48</td><td>—</td><td>—</td></tr>
+</table>
+<div class="key"><b>量级判断</b>：以 HIL 30 keV 为基准，文献参数下 30 kV EBL 的最佳 LER 约为其
+<b>29.6 倍</b>，100 kV EBL 约为 <b>2.3 倍</b>。
+升压对 EBL 有实质收益（前散射 α 由 59 nm
+降到 7.3 nm），但仍显著落后；
+HIL 30→100 keV 的 LER 几乎不变，说明其极限由二次电子离域而非束流能量设定——
+这本身是工艺鲁棒性优势。</div>
+
+<h2>5. 邻近效应（光栅口径）</h2>
+<p>调制传递函数 M(p) 直接给出图形对比度。EBL 因 η 较大，细光栅的对比度被压制在
+1/(1+η) = 0.57 附近；HIL 则趋近 1。这与参考文献（Langmuir 2025, 41, 29152，
+Si 光栅的 HIL 制备）中"氦离子光刻邻近效应可忽略"的观察一致。</p>
+<table><tr><th>M(p)</th><th>25 nm</th><th>50 nm</th><th>100 nm</th><th>250 nm</th><th>500 nm</th><th>1000 nm</th><th>2000 nm</th><th>5000 nm</th></tr>
+<tr><td>HIL 30 keV</td><td>0.920</td><td>0.973</td><td>0.989</td><td>0.997</td><td>0.999</td><td>1.000</td><td>1.000</td><td>1.000</td></tr>
+<tr><td>EBL 30 kV</td><td>0.000</td><td>0.000</td><td>0.019</td><td>0.332</td><td>0.501</td><td>0.555</td><td>0.570</td><td>0.575</td></tr>
+<tr><td>EBL 100 kV</td><td>0.248</td><td>0.466</td><td>0.545</td><td>0.570</td><td>0.574</td><td>0.574</td><td>0.575</td><td>0.575</td></tr>
+</table>
+
+<h2>6. 口径与局限</h2>
+<ul>
+<li><b>EBL 参数为文献假设值</b>：Tabulated parameters are for a 0.5 um resist on Si. alpha grows steeply with resist thickness (Eq. 10), so for a 40 nm film the pure scattering term is much smaller; the 'ebl_resist_scaled' branch applies Eq. 10 plus a 3 nm probe spot as the sensitivity band. Real tools always add a probe term, which the literature alpha implicitly carries.</li>
+<li><b>HIL 的绝对剂量轴未标定</b>（ρ_gel、ω_SE 为假设，a_eff 为反标定），故 LER 是随机下限而非绝对预测。</li>
+<li>两支束流共用 a_eff 与 n_A，属受控比较，用于<b>隔离 PSF 形状贡献</b>。</li>
+<li>模型无显影动力学项，未包含抗蚀剂溶解随机性与线宽粗糙度（LWR）的独立贡献。</li>
+<li><b>本次顺带修复</b>：<code>metrics.converged_lsf()</code> 原先只返回正半轴，导致 CD 被当作半宽、
+NILS 低估 2×（LER 不受影响）。已改为镜像为完整对称网格。</li>
+</ul>
+
+<div class="foot">数值见 <code>results.json</code>；复现 <code>python scripts/compare_hil_ebl.py</code>。
+参考文献：M. Chen et al., <i>Nanofabrication of Silicon Gratings Enabled by Vapor-Phase,
+Highly Uniform Self-Assembled Monolayer Resists</i>, Langmuir 2025, 41(43), 29152；
+EBL 双高斯参数见 Proximity Effect in E-beam Lithography, Georgia Tech Nanolithography group (nanolithography.gatech.edu/proximity.pdf), Table I after ref. [13]; alpha-thickness scaling from its Eq. (10).</div>
+</body></html>

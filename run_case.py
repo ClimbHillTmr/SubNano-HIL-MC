@@ -87,6 +87,7 @@ TARGET_LER3_NM = 0.21             # published sub-nm reference (Zhuang 2024)
 # stopping depth of 30 keV He+ in Si matches the SRIM projected range.
 # Verified in this build: e_scale = 1.10 -> 281 nm (SRIM 282.2 nm, -0.4%).
 E_SCALE = 1.10
+A_EFF = 9.17                 # nm^2; back-fitted to membrane min LER3sigma = 0.21 nm
 SRIM_RANGE_SI_NM = 282.2
 
 # --- Monte-Carlo sampling ---------------------------------------------------
@@ -929,6 +930,208 @@ def fig_design(summary, sweep_bulk, contrast, sputter_curve, heat_curve,
 
 
 # ===========================================================================
+# write_report
+# ===========================================================================
+def write_report(results, analysis, xrr_fit, s_bulk, s_mem, s_thin, s_dense,
+                 contrast, sp_proc, ht_proc, line3d):
+    """Render analysis/case_40nm_bulk/report.html from the full results dict.
+
+    Restored: the function was referenced by ``main`` but never defined in the
+    initial commit, so ``python run_case.py`` raised ``NameError`` after writing
+    ``results.json``.  The HTML report below mirrors the figures already saved
+    next to it (``fig1_structure.png``...``fig6_design.png``) and the structured
+    numbers in ``results.json``.
+    """
+    import html as _html
+
+    spec = results["specification"]
+    cal = results["calibration"]
+    cif = results["cif"]
+    xrrd = results["xrr_fit"]
+    psfd = results["psf"]
+
+    def esc(x):
+        if x is None:
+            return ""
+        return _html.escape(str(x))
+
+    def case_row(s):
+        d = s.to_dict()
+        stoch = float(d['best_ler3_stoch_nm'])
+        total = 3.0 * np.sqrt((stoch / 3.0) ** 2
+                              + float(xrrd['sigma_film_nm']) ** 2)
+        return (
+            "<tr>"
+            f"<td>{esc(s.tag)}</td>"
+            f"<td>{d['best_dose_pC_cm']:.1f}</td>"
+            f"<td>{d['best_cd_nm']:.2f}</td>"
+            f"<td>{d['best_nils']:.2f}</td>"
+            f"<td><b>{stoch:.3f}</b></td>"
+            f"<td>{total:.3f}</td>"
+            f"<td>{esc(d['cd_target_reachable'])}</td>"
+            f"<td>{d['target_dose_pC_cm']:.1f}</td>"
+            f"<td>{d['target_nils']:.2f}</td>"
+            f"<td>{d['target_ler3_stoch_nm']:.3f}</td>"
+            f"<td>{esc(d['exposure_latitude_pC_cm'])}</td>"
+            "</tr>"
+        )
+
+    def ligand_row(l):
+        return (f"<tr><td>{esc(l.get('label'))}</td>"
+                f"<td>{esc(l.get('count'))}</td>"
+                f"<td>{esc(l.get('role'))}</td></tr>")
+
+    figures = [
+        ("fig1_structure.png",   "Single-crystal structure of the Ti₆-oxo "
+                                 "cluster resist (parsed from data/4.cif)."),
+        ("fig2_xrr.png",         f"XRR fit (Parratt recursion) of the "
+                                 f"{xrrd['thickness_nm']:.1f} nm film: "
+                                 f"ρ = {xrrd['density_g_cm3']:.3f} g/cm³, "
+                                 f"σ = {xrrd['sigma_film_nm']:.3f} nm."),
+        ("fig3_transport.png",   "He⁺ ion transport: trajectories, depth-dose "
+                                 "Bragg curve and energy partition for the "
+                                 "bulk-Si and suspended-membrane stacks."),
+        ("fig4_psf_nils.png",    "Radial PSF (95% CI) → LSF → CD/NILS for the "
+                                 "two reference cases."),
+        ("fig5_ler_window.png",  "LER(3σ) vs dose (U-curve), CD vs dose, "
+                                 "and 2-D process window; thickness-scan "
+                                 "summary inset."),
+        ("fig6_design.png",      "Design closure: contrast curve, sputter, "
+                                 "beam heating, and 3-D latent-image "
+                                 "simulation."),
+    ]
+
+    css = (
+        "body{font-family:-apple-system,Segoe UI,Arial,'Microsoft YaHei',"
+        "sans-serif;max-width:1080px;margin:0 auto;padding:28px 22px 80px;"
+        "color:#1a1a1a;line-height:1.55}"
+        "h1{margin:0 0 6px}h2{margin-top:34px;border-bottom:1px solid #ddd;"
+        "padding-bottom:4px}h3{margin-top:22px}"
+        "table{border-collapse:collapse;margin:10px 0;font-size:0.95em}"
+        "th,td{border:1px solid #d0d0d0;padding:5px 9px;text-align:left}"
+        "th{background:#f4f4f4}"
+        ".num{font-variant-numeric:tabular-nums}"
+        ".key{color:#0a4;font-weight:600}"
+        "img{max-width:100%;border:1px solid #e0e0e0;margin:8px 0}"
+        ".open{background:#fff7e6;border-left:4px solid #e8a400;padding:8px "
+        "14px;margin:6px 0}"
+        ".meta{color:#666;font-size:0.9em}"
+    )
+
+    rows = "".join(case_row(s) for s in (s_bulk, s_mem, s_thin, s_dense))
+    ligands_html = ""
+    if isinstance(cif.get("ligands"), list) and cif["ligands"]:
+        ligands_html = "<h3>Ligand inventory</h3><table><tr><th>label</th>" \
+            "<th>count</th><th>role</th></tr>" + \
+            "".join(ligand_row(l) for l in cif["ligands"]) + "</table>"
+
+    figure_html = "".join(
+        f'<h3>{esc(name)}</h3><img src="{esc(name)}" alt="{esc(name)}">'
+        f'<p class="meta">{esc(cap)}</p>'
+        for name, cap in figures
+    )
+
+    open_items_html = "".join(f'<div class="open">{esc(it)}</div>'
+                               for it in results["open_items"])
+
+    html = f"""<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<title>SubNano-HIL-MC · {esc(spec['beam'])} {spec['energy_keV']:.0f} keV on
+{esc(spec['resist_nm']):.0f} nm Ti-cluster / {spec['substrate_thickness_um']:.0f} µm Si</title>
+<style>{css}</style></head><body>
+<h1>SubNano-HIL-MC report</h1>
+<p class="meta">Generated {esc(results['generated'])} · run_case.py ·
+seed 2024–2027 + 311–313</p>
+
+<h2>1. Executive summary</h2>
+<table><tr><th>spec</th><td>
+{esc(spec['beam'])} {spec['energy_keV']:.0f} keV ·
+{esc(spec['resist_nm']):.0f} nm Ti-cluster resist ·
+{esc(spec['substrate'])} {spec['substrate_thickness_um']:.0f} µm ·
+CD target {esc(spec['cd_target_nm']):.0f} ± {esc(spec['cd_tolerance']):.2f} nm
+</td></tr><tr><th>calibration</th><td>
+<span class="key">e_scale</span>={cal['e_scale']:.2f} →
+range<sub>Si</sub> = {cal['range_substrate_nm']:.1f} nm
+(SRIM {cal['srim_range_Si_nm']:.1f}, {cal['range_error_pct']:+.2f}%);
+<span class="key">a_eff</span> = {cal['a_eff_nm2']:.2f} nm²
+(back-fitted to 0.21 nm);
+<span class="key">w_SE</span> = {cal['w_se_eV']:.0f} eV;
+<span class="key">ρ_gel</span> = {cal['rho_gel_eV_per_nm3']:.0f} eV/nm³;
+dose axis <b>{'calibrated' if cal['dose_axis_calibrated'] else 'not calibrated'}</b>
+</td></tr><tr><th>PSF / LSF</th><td>
+r<sub>90</sub> = {psfd['r90_nm']:.2f} nm;
+LSF FWHM = {psfd['lsf_fwhm_nm']:.2f} nm
+</td></tr><tr><th>design floor</th><td>
+CD<sub>floor</sub> = {results['design']['cd_floor_nm']:.2f} nm
+({esc(results['design']['cd_floor_basis'])})
+</td></tr></table>
+
+<h2>2. Per-case results</h2>
+<table>
+<tr><th>case</th><th>best dose<br>(pC/cm)</th><th>best CD<br>(nm)</th>
+<th>NILS</th><th>LER₃σ<br>stoch (nm)</th><th>LER₃σ<br>total (nm)</th>
+<th>CD=10 nm<br>reachable</th><th>target dose<br>(pC/cm)</th>
+<th>target NILS</th><th>target LER₃σ<br>stoch (nm)</th>
+<th>exposure latitude<br>(pC/cm)</th></tr>
+{rows}
+</table>
+<p class="meta">LER₃σ<sub>total</sub> = 3·√(LER₁σ² + σ<sub>surface</sub>²)
+with σ<sub>surface</sub> = {xrrd['sigma_film_nm']:.3f} nm.</p>
+
+<h2>3. Crystal structure &mdash; <code>data/4.cif</code></h2>
+<table><tr><th>formula</th><td>{esc(cif.get('formula'))}</td>
+<th>FW</th><td>{esc(cif.get('fw'))}</td></tr>
+<tr><th>crystal system</th><td>{esc(cif.get('crystal_system'))}</td>
+<th>space group</th><td>{esc(cif.get('space_group'))} (#{esc(cif.get('it_number'))})</td></tr>
+<tr><th>Z / Z'</th><td>{esc(cif.get('z'))} / {esc(cif.get('z_prime'))}</td>
+<th>ρ_calc</th><td>{esc(cif.get('density_calc'))} g/cm³</td></tr>
+<tr><th>R1 / wR2</th><td>{esc(cif.get('r1'))} / {esc(cif.get('wr2'))}</td>
+<th>GoF</th><td>{esc(cif.get('goof'))}</td></tr>
+<tr><th>molecule extent</th><td>{esc(cif.get('molecule_extent_nm'))} nm</td>
+<th>Ti mass fraction</th><td>{esc(cif.get('ti_mass_fraction'))}</td></tr></table>
+{ligands_html}
+
+<h2>4. Hazards &amp; process</h2>
+<table><tr><th>contrast</th><td>
+D<sub>0</sub> = {contrast.D0:.2f} pC/cm ·
+D<sub>100</sub> = {contrast.D100:.0f} pC/cm ·
+γ = {contrast.gamma:.2f}
+(model-derived; no development data)</td></tr>
+<tr><th>sputter</th><td>
+Y = {sp_proc.yield_atoms_per_ion:.2e} atoms/ion;
+removed = {sp_proc.removed_thickness_nm:.2e} nm
+(He → Ti-cluster, Sigmund, negligible)</td></tr>
+<tr><th>beam heating</th><td>
+&ltT&gt;<sub>scan</sub> = {ht_proc.dT_scan_averaged_K:.1e} K;
+&ltT&gt;<sub>worst</sub> = {ht_proc.dT_worst_case_K:.1e} K;
+safe = {esc(ht_proc.safe)}</td></tr>
+<tr><th>3-D line</th><td>
+CD = {line3d.cd_nm:.2f} nm;
+LER₃σ = {line3d.ler_3sigma_nm:.2f} nm;
+LWR₃σ = {line3d.lwr_3sigma_nm:.2f} nm;
+ξ = {line3d.corr_length_nm:.1f} nm
+</td></tr></table>
+
+<h2>5. Figures</h2>
+{figure_html}
+
+<h2>6. Open items</h2>
+{open_items_html}
+
+<hr><p class="meta">
+HIL stochastic lower bound for LER₃σ ≈ 0.21 nm (40 nm Ti-cluster /
+670 µm Si, 30 keV He⁺); sub-nm reference target IRDS &lt; 0.5 nm.
+All numbers above are model-derived; see <code>results.json</code> for the
+machine-readable dump and <code>run.log</code> for the full log.
+</p></body></html>
+"""
+    out_path = os.path.join(OUT, "report.html")
+    with open(out_path, "w", encoding="utf-8") as fh:
+        fh.write(html)
+    log(f"   saved {os.path.basename(out_path)}")
+
+
+# ===========================================================================
 # main
 # ===========================================================================
 def main():
@@ -1159,3 +1362,10 @@ def main():
                  contrast, sp_proc, ht_proc, line3d)
     log(f"done in {time.time()-t0:.0f}s")
     return results
+
+
+if __name__ == "__main__":
+    # Restored entry point: without it `python run_case.py` was a silent no-op.
+    # The guard keeps `import run_case` (used by scripts/nature_visualization.py)
+    # side-effect free.
+    main()

@@ -118,12 +118,21 @@ def lsf_from_radial(r: np.ndarray, pr: np.ndarray,
     return x, L
 
 
-def converged_lsf(maps, pixel_nm: float, r_min: float = 8.0):
+def converged_lsf(maps, pixel_nm: float, r_min: float = 8.0, symmetric: bool = True):
     """Average the radial PSF over several MC exposure maps, then Abel-transform
     to a well-converged line-spread function (avoids far-tail MC noise).
 
     Returns (x, lsf) where ``x`` is the lateral coordinate in nm and ``lsf`` is
     in eV/nm per ion.
+
+    ``symmetric`` (default) mirrors the positive-half result onto the full x
+    axis.  The radial grid produced by :func:`radial_profile` covers ``r >= 0``
+    only, but the line-spread function is even in ``x`` -- ``L(-x) = L(x)`` --
+    and :func:`evaluate_line` requires a grid symmetric about 0 because it takes
+    ``CD = x[i1] - x[i0]``.  Passing the un-mirrored half-axis silently reports a
+    **half width** as the CD and halves the NILS (the LER is unaffected because
+    it depends on ``NILS / CD``).  Set ``symmetric=False`` only to recover the
+    historical half-axis behaviour.
     """
     rs, ps = [], []
     for m in maps:
@@ -137,7 +146,11 @@ def converged_lsf(maps, pixel_nm: float, r_min: float = 8.0):
     pavg /= len(maps)
     # power-law smoothing of the far radial tail (only where the MC is below it)
     pavg = smooth_tail(r0, pavg, r_min=r_min)
-    return lsf_from_radial(r0, pavg, r0)
+    x, lsf = lsf_from_radial(r0, pavg, r0)
+    if symmetric:
+        x = np.concatenate([-x[::-1], x])
+        lsf = np.concatenate([lsf[::-1], lsf])
+    return x, lsf
 
 
 @dataclass

@@ -23,3 +23,10 @@ run_case_legacy.py
 
 # Regenerable binary caches (rebuild via scripts/nature_visualization.py)
 *.pkl
+
+# Linter / test caches
+.pytest_cache/
+.ruff_cache/
+
+# Throwaway regeneration logs (keep canonical run.log tracked)
+analysis/**/run_regenerate.log

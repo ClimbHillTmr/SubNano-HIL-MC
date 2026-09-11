@@ -1,0 +1,10 @@
+[HIL] 30 keV He+  MC x3 replicates x20000 ions ...
+        range=282 nm  FWHM=2.30 nm  E_res=2647 eV (8.82%)  eta_ion=1.478%  prox_bg=4.4%  best LER3s=0.129 nm @CD=3.6 nm  (23.8s)
+[HIL] 100 keV He+  MC x3 replicates x20000 ions ...
+        range=723 nm  FWHM=1.90 nm  E_res=4792 eV (4.79%)  eta_ion=0.258%  prox_bg=4.2%  best LER3s=0.064 nm @CD=3.7 nm  (32.8s)
+[EBL      ] 30 kV  alpha=58.87 nm  beta=3.99 um  FWHM=98.80 nm  best LER3s=3.747 nm @CD=200.0 nm
+[EBL      ] 100 kV  alpha=7.30 nm  beta=31.20 um  FWHM=12.20 nm  best LER3s=0.288 nm @CD=36.5 nm
+[EBL*     ] 30 kV  alpha=3.30 nm  beta=3.99 um  FWHM=5.60 nm  best LER3s=0.146 nm @CD=15.0 nm
+[EBL*     ] 100 kV  alpha=3.01 nm  beta=31.20 um  FWHM=5.10 nm  best LER3s=0.111 nm @CD=16.0 nm
+figure -> analysis\hil_vs_ebl\fig_hil_vs_ebl.png
+report -> analysis\hil_vs_ebl\report.html
